@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,12 +19,12 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClasificacionScreen(
+fun RecoleccionScreen(
     onBack: () -> Unit = {},
     onGoBuscar: () -> Unit = {},
     onGoAgregar: () -> Unit = {},
     onGoActualizar: () -> Unit = {},
-    onGoReciclados: () -> Unit = {}
+    onGoValorar: () -> Unit = {}
 ) {
     val green = Color(0xFF2E7D32)
     val greenDark = Color(0xFF1B5E20)
@@ -40,27 +40,17 @@ fun ClasificacionScreen(
                 }
             )
         }
-    ) { innerPadding ->
+    ) { inner ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(inner)
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ícono principal
-            Icon(
-                imageVector = Icons.Filled.Recycling,
-                contentDescription = "Reciclaje",
-                tint = green,
-                modifier = Modifier.size(80.dp)
-            )
-
-            Spacer(Modifier.height(8.dp))
-
             // Título
             Text(
-                text = "Clasificación Residuos",
+                text = "Puntos Recolección",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = green
@@ -68,17 +58,17 @@ fun ClasificacionScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Botones de navegación
-            ClasificacionButton("Busca Material", Icons.Filled.Search, onClick = onGoBuscar)
-            ClasificacionButton("Agrega Material", Icons.Filled.Add, onClick = onGoAgregar)
-            ClasificacionButton("Actualiza Material", Icons.Outlined.Update, onClick = onGoActualizar)
-            ClasificacionButton("Materiales Reciclados", Icons.Filled.Recycling, onClick = onGoReciclados)
+            // Opciones (solo diseño)
+            RecoleccionButton("Busca Punto", Icons.Filled.Search, onClick = onGoBuscar)
+            RecoleccionButton("Agrega Punto", Icons.Filled.Add, onClick = onGoAgregar)
+            RecoleccionButton("Actualiza Punto", Icons.Outlined.Update, onClick = onGoActualizar)
+            RecoleccionButton("Valora Punto R", Icons.Outlined.ThumbUp, onClick = onGoValorar) // ← texto corregido
         }
     }
 }
 
 @Composable
-private fun ClasificacionButton(
+private fun RecoleccionButton(
     text: String,
     icon: ImageVector,
     onClick: () -> Unit = {}

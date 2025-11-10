@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.javierf.ecoberde.navigation.Routes
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,10 +35,10 @@ fun HomeScreen(navController: NavController) {
             DrawerSheet(
                 greenDark = greenDark,
                 onNavigateToClasificacion = {
-                    scope.launch {
-                        drawerState.close()
-                        navController.navigate("clasificacion")
-                    }
+                    scope.launch { drawerState.close(); navController.navigate(Routes.Clasificacion) }
+                },
+                onNavigateToRecoleccion = {
+                    scope.launch { drawerState.close(); navController.navigate(Routes.Recoleccion) }
                 }
             )
         }
@@ -85,11 +86,12 @@ fun HomeScreen(navController: NavController) {
 @Composable
 private fun DrawerSheet(
     greenDark: Color,
-    onNavigateToClasificacion: () -> Unit
+    onNavigateToClasificacion: () -> Unit,
+    onNavigateToRecoleccion: () -> Unit
 ) {
-    ModalDrawerSheet(modifier = Modifier.width(260.dp)) {
-
-        // Encabezado opcional del drawer (puedes quitarlo si no lo quieres)
+    ModalDrawerSheet(
+        modifier = Modifier.width(260.dp)
+    ) {
         Spacer(Modifier.height(12.dp))
         Text(
             text = "Menú",
@@ -99,7 +101,7 @@ private fun DrawerSheet(
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
 
-        // Ítem: Clasificación (icono + texto lado a lado, fila completa clickeable)
+        // Ítem: Clasificación
         NavigationDrawerItem(
             selected = false,
             onClick = onNavigateToClasificacion,
@@ -114,31 +116,38 @@ private fun DrawerSheet(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        // Otros ítems de ejemplo (aún sin navegación, solo diseño)
+        // Ítem: Recolección (segundo icono)
         NavigationDrawerItem(
             selected = false,
-            onClick = { /* TODO: Basura */ },
-            label = { Text("Basura") },
-            icon = { Icon(Icons.Outlined.Delete, contentDescription = "Basura", tint = greenDark) },
+            onClick = onNavigateToRecoleccion,
+            label = { Text("Recolección") },
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.Delete, // icono de caneca como en mockup
+                    contentDescription = "Recolección",
+                    tint = greenDark
+                )
+            },
             modifier = Modifier.padding(horizontal = 8.dp)
         )
+
+        // (Opcionales) Otros ítems del mockup
         NavigationDrawerItem(
             selected = false,
-            onClick = { /* TODO: Voluntariado */ },
+            onClick = { /* Voluntariado (sin lógica) */ },
             label = { Text("Voluntariado") },
-            icon = { Icon(Icons.Outlined.VolunteerActivism, contentDescription = "Voluntariado", tint = greenDark) },
+            icon = { Icon(Icons.Outlined.VolunteerActivism, contentDescription = null, tint = greenDark) },
             modifier = Modifier.padding(horizontal = 8.dp)
         )
         NavigationDrawerItem(
             selected = false,
-            onClick = { /* TODO: Eco */ },
+            onClick = { /* Eco (sin lógica) */ },
             label = { Text("Eco") },
-            icon = { Icon(Icons.Outlined.Eco, contentDescription = "Eco", tint = greenDark) },
+            icon = { Icon(Icons.Outlined.Eco, contentDescription = null, tint = greenDark) },
             modifier = Modifier.padding(horizontal = 8.dp)
         )
     }
 }
-
 
 @Composable
 private fun HomeLink(text: String, color: Color) {
@@ -151,5 +160,6 @@ private fun HomeLink(text: String, color: Color) {
             .clickable(enabled = false) { /* solo diseño */ }
     )
 }
+
 
 
