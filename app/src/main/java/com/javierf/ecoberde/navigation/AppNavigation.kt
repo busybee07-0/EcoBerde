@@ -17,7 +17,11 @@ fun AppNavigation() {
             )
         }
         composable("home") {
-            HomeScreen()
+            HomeScreen(navController)
         }
+        composable("clasificacion") {
+            ClasificacionScreen(onBack = { navController.popBackStack() })
+        }
+
     }
 }

@@ -16,28 +16,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Colores verdes estilo EcoBerde
     val greenDark = Color(0xFF1B5E20)
     val green = Color(0xFF2E7D32)
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerSheet(greenDark = greenDark)
+            DrawerSheet(
+                greenDark = greenDark,
+                onNavigateToClasificacion = {
+                    scope.launch {
+                        drawerState.close()
+                        navController.navigate("clasificacion")
+                    }
+                }
+            )
         }
     ) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { /* vacío para mantener el estilo del mockup */ },
+                    title = {},
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Filled.Menu, contentDescription = "Menú")
@@ -63,7 +71,7 @@ fun HomeScreen() {
                 )
                 Spacer(Modifier.height(16.dp))
 
-                // Lista de “enlaces” (solo UI; no navegamos aún)
+                // Lista de secciones (solo diseño)
                 HomeLink("¿Qué es RRR?", greenDark)
                 HomeLink("¿Qué es el reciclaje?", greenDark)
                 HomeLink("Guía materiales reciclables", greenDark)
@@ -75,22 +83,34 @@ fun HomeScreen() {
 }
 
 @Composable
-private fun DrawerSheet(greenDark: Color) {
+private fun DrawerSheet(
+    greenDark: Color,
+    onNavigateToClasificacion: () -> Unit
+) {
     ModalDrawerSheet(
         modifier = Modifier.width(220.dp)
     ) {
         Spacer(Modifier.height(12.dp))
-        // Íconos verticales (simulan el mockup). No tienen acción aún.
+        Text(
+            text = "Clasificación",
+            color = greenDark,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            Icon(Icons.Outlined.Recycling, contentDescription = "Reciclaje", tint = greenDark, modifier = Modifier.size(32.dp))
-            Icon(Icons.Outlined.Delete, contentDescription = "Basura", tint = greenDark, modifier = Modifier.size(32.dp))
-            Icon(Icons.Outlined.VolunteerActivism, contentDescription = "Voluntariado", tint = greenDark, modifier = Modifier.size(32.dp))
-            Icon(Icons.Outlined.Eco, contentDescription = "Eco", tint = greenDark, modifier = Modifier.size(32.dp))
+            IconButton(onClick = onNavigateToClasificacion) {
+                Icon(Icons.Outlined.Recycling, contentDescription = "Clasificación", tint = greenDark)
+            }
+            Icon(Icons.Outlined.Delete, contentDescription = "Basura", tint = greenDark)
+            Icon(Icons.Outlined.VolunteerActivism, contentDescription = "Voluntariado", tint = greenDark)
+            Icon(Icons.Outlined.Eco, contentDescription = "Eco", tint = greenDark)
         }
     }
 }
@@ -103,7 +123,8 @@ private fun HomeLink(text: String, color: Color) {
         fontSize = 16.sp,
         modifier = Modifier
             .padding(vertical = 8.dp)
-            .clickable(enabled = false) { /* sin navegación por ahora */ }
+            .clickable(enabled = false) { /* solo diseño */ }
     )
 }
+
 
