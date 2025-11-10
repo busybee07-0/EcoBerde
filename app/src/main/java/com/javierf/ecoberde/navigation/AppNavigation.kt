@@ -6,9 +6,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.javierf.ecoberde.ui.screens.*
 
-/** Rutas centralizadas para evitar errores de escritura */
+/** Rutas centralizadas */
 object Routes {
-    // Autenticación
+    // Auth
     const val Login = "login"
     // Home
     const val Home = "home"
@@ -24,7 +24,8 @@ object Routes {
     const val Recoleccion = "recoleccion"
     const val BuscarPunto = "buscarPunto"
     const val AgregarPunto = "agregarPunto"
-    const val ActualizarPunto = "actualizarPunto"   // ← NUEVA RUTA
+    const val ActualizarPunto = "actualizarPunto"
+    const val ValorarPunto = "valorarPunto"   // ← NUEVA RUTA
 }
 
 @Composable
@@ -39,7 +40,7 @@ fun AppNavigation() {
         composable(Routes.Login) {
             LoginScreen(
                 onLogin = { navController.navigate(Routes.Home) },
-                onRegister = { /* sin lógica */ }
+                onRegister = { /* no-op */ }
             )
         }
 
@@ -69,13 +70,13 @@ fun AppNavigation() {
                 onBack = { navController.popBackStack() },
                 onGoBuscar = { navController.navigate(Routes.BuscarPunto) },
                 onGoAgregar = { navController.navigate(Routes.AgregarPunto) },
-                onGoActualizar = { navController.navigate(Routes.ActualizarPunto) }, // ← conectar
-                onGoValorar = { /* navController.navigate("valorarPunto") */ }
+                onGoActualizar = { navController.navigate(Routes.ActualizarPunto) },
+                onGoValorar = { navController.navigate(Routes.ValorarPunto) } // ← conectar
             )
         }
         composable(Routes.BuscarPunto) { BuscarPuntoScreen(onBack = { navController.popBackStack() }) }
         composable(Routes.AgregarPunto) { AgregarPuntoScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.ActualizarPunto) { ActualizarPuntoScreen(onBack = { navController.popBackStack() }) } // ← nueva pantalla
+        composable(Routes.ActualizarPunto) { ActualizarPuntoScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.ValorarPunto) { ValorarPuntoScreen(onBack = { navController.popBackStack() }) } // ← NUEVA
     }
 }
-
