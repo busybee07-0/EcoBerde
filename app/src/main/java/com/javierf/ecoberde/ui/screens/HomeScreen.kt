@@ -87,33 +87,58 @@ private fun DrawerSheet(
     greenDark: Color,
     onNavigateToClasificacion: () -> Unit
 ) {
-    ModalDrawerSheet(
-        modifier = Modifier.width(220.dp)
-    ) {
+    ModalDrawerSheet(modifier = Modifier.width(260.dp)) {
+
+        // Encabezado opcional del drawer (puedes quitarlo si no lo quieres)
         Spacer(Modifier.height(12.dp))
         Text(
-            text = "Clasificación",
+            text = "Menú",
             color = greenDark,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
-        ) {
-            IconButton(onClick = onNavigateToClasificacion) {
-                Icon(Icons.Outlined.Recycling, contentDescription = "Clasificación", tint = greenDark)
-            }
-            Icon(Icons.Outlined.Delete, contentDescription = "Basura", tint = greenDark)
-            Icon(Icons.Outlined.VolunteerActivism, contentDescription = "Voluntariado", tint = greenDark)
-            Icon(Icons.Outlined.Eco, contentDescription = "Eco", tint = greenDark)
-        }
+        // Ítem: Clasificación (icono + texto lado a lado, fila completa clickeable)
+        NavigationDrawerItem(
+            selected = false,
+            onClick = onNavigateToClasificacion,
+            label = { Text("Clasificación") },
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.Recycling,
+                    contentDescription = "Clasificación",
+                    tint = greenDark
+                )
+            },
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+
+        // Otros ítems de ejemplo (aún sin navegación, solo diseño)
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { /* TODO: Basura */ },
+            label = { Text("Basura") },
+            icon = { Icon(Icons.Outlined.Delete, contentDescription = "Basura", tint = greenDark) },
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { /* TODO: Voluntariado */ },
+            label = { Text("Voluntariado") },
+            icon = { Icon(Icons.Outlined.VolunteerActivism, contentDescription = "Voluntariado", tint = greenDark) },
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { /* TODO: Eco */ },
+            label = { Text("Eco") },
+            icon = { Icon(Icons.Outlined.Eco, contentDescription = "Eco", tint = greenDark) },
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
     }
 }
+
 
 @Composable
 private fun HomeLink(text: String, color: Color) {
