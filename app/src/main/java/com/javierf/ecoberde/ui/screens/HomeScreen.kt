@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Eco
 import androidx.compose.material.icons.outlined.Money
 import androidx.compose.material.icons.outlined.Recycling
-import androidx.compose.material.icons.outlined.VolunteerActivism
+import androidx.compose.material.icons.outlined.Eco
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,6 +42,9 @@ fun HomeScreen(navController: NavController) {
                 },
                 onNavigateToGanancias = {
                     scope.launch { drawerState.close(); navController.navigate(Routes.Ganancias) }
+                },
+                onNavigateToImpacto = {
+                    scope.launch { drawerState.close(); navController.navigate(Routes.Impacto) }
                 }
             )
         }
@@ -92,7 +94,8 @@ private fun DrawerSheet(
     greenDark: Color,
     onNavigateToClasificacion: () -> Unit,
     onNavigateToRecoleccion: () -> Unit,
-    onNavigateToGanancias: () -> Unit
+    onNavigateToGanancias: () -> Unit,
+    onNavigateToImpacto: () -> Unit
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(260.dp)
@@ -130,19 +133,11 @@ private fun DrawerSheet(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        // Extras del mock (sin navegación)
         NavigationDrawerItem(
             selected = false,
-            onClick = { /* Voluntariado */ },
-            label = { Text("Voluntariado") },
-            icon = { Icon(Icons.Outlined.VolunteerActivism, contentDescription = null, tint = greenDark) },
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        NavigationDrawerItem(
-            selected = false,
-            onClick = { /* Eco */ },
-            label = { Text("Eco") },
-            icon = { Icon(Icons.Outlined.Eco, contentDescription = null, tint = greenDark) },
+            onClick = onNavigateToImpacto,
+            label = { Text("Impacto") },
+            icon = { Icon(Icons.Outlined.Eco, contentDescription = null, tint = greenDark) }, // icono de hoja
             modifier = Modifier.padding(horizontal = 8.dp)
         )
     }
@@ -159,7 +154,6 @@ private fun HomeLink(text: String, color: Color) {
             .clickable(enabled = false) { /* solo diseño */ }
     )
 }
-
 
 
 

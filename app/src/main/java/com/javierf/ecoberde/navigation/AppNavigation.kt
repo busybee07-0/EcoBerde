@@ -29,6 +29,9 @@ object Routes {
 
     // Ganancias
     const val Ganancias = "ganancias"
+
+    // Impacto
+    const val Impacto = "impacto"
 }
 
 @Composable
@@ -86,11 +89,23 @@ fun AppNavigation() {
         composable(Routes.Ganancias) {
             GananciasScreen(
                 onBack = { navController.popBackStack() },
-                onCalcular = { /* navController.navigate("calcularGanancias") */ },
-                onDetalle = { /* navController.navigate("detalleGanancias") */ },
-                onHistorial = { /* navController.navigate("historialGanancias") */ },
-                onAgregarMateriales = { /* navController.navigate("agregarMaterialesGanancias") */ }
+                onCalcular = { /* TODO */ },
+                onDetalle = { /* TODO */ },
+                onHistorial = { /* TODO */ },
+                onAgregarMateriales = { /* TODO */ }
+            )
+        }
+
+        // IMPACTO
+        composable(Routes.Impacto) {
+            ImpactoScreen(
+                onBack = { navController.popBackStack() },
+                onCalcular = { /* TODO */ },
+                onDetalle = { /* TODO */ },
+                onHistorial = { /* TODO */ },
+                onAgregarMateriales = { /* TODO */ }
             )
         }
     }
 }
+
