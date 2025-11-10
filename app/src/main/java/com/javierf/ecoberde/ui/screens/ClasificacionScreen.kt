@@ -12,13 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClasificacionScreen(onBack: () -> Unit = {}) {
+fun ClasificacionScreen(
+    onBack: () -> Unit = {},
+    onGoBuscar: () -> Unit = {},
+    onGoAgregar: () -> Unit = {}
+) {
     val greenDark = Color(0xFF1B5E20)
     val green = Color(0xFF2E7D32)
 
@@ -41,7 +46,7 @@ fun ClasificacionScreen(onBack: () -> Unit = {}) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ícono superior
+            // Ícono principal
             Icon(
                 imageVector = Icons.Filled.Recycling,
                 contentDescription = "Reciclaje",
@@ -61,9 +66,9 @@ fun ClasificacionScreen(onBack: () -> Unit = {}) {
 
             Spacer(Modifier.height(24.dp))
 
-            // Botones de acción
-            ClasificacionButton("Busca Material", Icons.Filled.Search)
-            ClasificacionButton("Agrega Material", Icons.Filled.Add)
+            // Botones de opciones (solo UI, sin lógica real)
+            ClasificacionButton("Busca Material", Icons.Filled.Search, onClick = onGoBuscar)
+            ClasificacionButton("Agrega Material", Icons.Filled.Add, onClick = onGoAgregar)
             ClasificacionButton("Actualiza Material", Icons.Outlined.Update)
             ClasificacionButton("Materiales Reciclados", Icons.Filled.Recycling)
         }
@@ -71,10 +76,14 @@ fun ClasificacionScreen(onBack: () -> Unit = {}) {
 }
 
 @Composable
-private fun ClasificacionButton(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+private fun ClasificacionButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit = {}
+) {
     val greenDark = Color(0xFF1B5E20)
     OutlinedButton(
-        onClick = { },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
@@ -90,4 +99,3 @@ private fun ClasificacionButton(text: String, icon: androidx.compose.ui.graphics
         }
     }
 }
-

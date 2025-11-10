@@ -23,5 +23,32 @@ fun AppNavigation() {
             ClasificacionScreen(onBack = { navController.popBackStack() })
         }
 
+        composable("buscarMaterial") {
+            BuscarMaterialScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("clasificacion") {
+            ClasificacionScreen(
+                onBack = { navController.popBackStack() },
+                onGoBuscar = { navController.navigate("buscarMaterial") }
+            )
+        }
+
+        composable("agregarMaterial") {
+            AgregarMaterialScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("clasificacion") {
+            ClasificacionScreen(
+                onBack = { navController.popBackStack() },
+                onGoBuscar = { navController.navigate("buscarMaterial") },
+                onGoAgregar = { navController.navigate("agregarMaterial") }
+            )
+        }
+
+
+
+
+
     }
 }
