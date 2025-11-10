@@ -1,7 +1,5 @@
 package com.javierf.ecoberde.ui.screens
 
-
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -38,7 +36,7 @@ fun HomeScreen() {
     ) {
         Scaffold(
             topBar = {
-                SmallTopAppBar(
+                TopAppBar(
                     title = { /* vacío para mantener el estilo del mockup */ },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
@@ -108,3 +106,4 @@ private fun HomeLink(text: String, color: Color) {
             .clickable(enabled = false) { /* sin navegación por ahora */ }
     )
 }
+
