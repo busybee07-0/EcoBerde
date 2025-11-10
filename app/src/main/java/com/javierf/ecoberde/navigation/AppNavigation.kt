@@ -25,7 +25,10 @@ object Routes {
     const val BuscarPunto = "buscarPunto"
     const val AgregarPunto = "agregarPunto"
     const val ActualizarPunto = "actualizarPunto"
-    const val ValorarPunto = "valorarPunto"   // ← NUEVA RUTA
+    const val ValorarPunto = "valorarPunto"
+
+    // Ganancias
+    const val Ganancias = "ganancias"
 }
 
 @Composable
@@ -71,12 +74,23 @@ fun AppNavigation() {
                 onGoBuscar = { navController.navigate(Routes.BuscarPunto) },
                 onGoAgregar = { navController.navigate(Routes.AgregarPunto) },
                 onGoActualizar = { navController.navigate(Routes.ActualizarPunto) },
-                onGoValorar = { navController.navigate(Routes.ValorarPunto) } // ← conectar
+                onGoValorar = { navController.navigate(Routes.ValorarPunto) }
             )
         }
         composable(Routes.BuscarPunto) { BuscarPuntoScreen(onBack = { navController.popBackStack() }) }
         composable(Routes.AgregarPunto) { AgregarPuntoScreen(onBack = { navController.popBackStack() }) }
         composable(Routes.ActualizarPunto) { ActualizarPuntoScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.ValorarPunto) { ValorarPuntoScreen(onBack = { navController.popBackStack() }) } // ← NUEVA
+        composable(Routes.ValorarPunto) { ValorarPuntoScreen(onBack = { navController.popBackStack() }) }
+
+        // GANANCIAS
+        composable(Routes.Ganancias) {
+            GananciasScreen(
+                onBack = { navController.popBackStack() },
+                onCalcular = { /* navController.navigate("calcularGanancias") */ },
+                onDetalle = { /* navController.navigate("detalleGanancias") */ },
+                onHistorial = { /* navController.navigate("historialGanancias") */ },
+                onAgregarMateriales = { /* navController.navigate("agregarMaterialesGanancias") */ }
+            )
+        }
     }
 }

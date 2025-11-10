@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Eco
+import androidx.compose.material.icons.outlined.Money
 import androidx.compose.material.icons.outlined.Recycling
 import androidx.compose.material.icons.outlined.VolunteerActivism
 import androidx.compose.material3.*
@@ -39,6 +40,9 @@ fun HomeScreen(navController: NavController) {
                 },
                 onNavigateToRecoleccion = {
                     scope.launch { drawerState.close(); navController.navigate(Routes.Recoleccion) }
+                },
+                onNavigateToGanancias = {
+                    scope.launch { drawerState.close(); navController.navigate(Routes.Ganancias) }
                 }
             )
         }
@@ -87,7 +91,8 @@ fun HomeScreen(navController: NavController) {
 private fun DrawerSheet(
     greenDark: Color,
     onNavigateToClasificacion: () -> Unit,
-    onNavigateToRecoleccion: () -> Unit
+    onNavigateToRecoleccion: () -> Unit,
+    onNavigateToGanancias: () -> Unit
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(260.dp)
@@ -101,47 +106,41 @@ private fun DrawerSheet(
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
 
-        // Ítem: Clasificación
         NavigationDrawerItem(
             selected = false,
             onClick = onNavigateToClasificacion,
             label = { Text("Clasificación") },
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.Recycling,
-                    contentDescription = "Clasificación",
-                    tint = greenDark
-                )
-            },
+            icon = { Icon(Icons.Outlined.Recycling, contentDescription = null, tint = greenDark) },
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        // Ítem: Recolección (segundo icono)
         NavigationDrawerItem(
             selected = false,
             onClick = onNavigateToRecoleccion,
             label = { Text("Recolección") },
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.Delete, // icono de caneca como en mockup
-                    contentDescription = "Recolección",
-                    tint = greenDark
-                )
-            },
+            icon = { Icon(Icons.Outlined.Delete, contentDescription = null, tint = greenDark) },
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        // (Opcionales) Otros ítems del mockup
         NavigationDrawerItem(
             selected = false,
-            onClick = { /* Voluntariado (sin lógica) */ },
+            onClick = onNavigateToGanancias,
+            label = { Text("Ganancias") },
+            icon = { Icon(Icons.Outlined.Money, contentDescription = null, tint = greenDark) },
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+
+        // Extras del mock (sin navegación)
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { /* Voluntariado */ },
             label = { Text("Voluntariado") },
             icon = { Icon(Icons.Outlined.VolunteerActivism, contentDescription = null, tint = greenDark) },
             modifier = Modifier.padding(horizontal = 8.dp)
         )
         NavigationDrawerItem(
             selected = false,
-            onClick = { /* Eco (sin lógica) */ },
+            onClick = { /* Eco */ },
             label = { Text("Eco") },
             icon = { Icon(Icons.Outlined.Eco, contentDescription = null, tint = greenDark) },
             modifier = Modifier.padding(horizontal = 8.dp)
@@ -160,6 +159,7 @@ private fun HomeLink(text: String, color: Color) {
             .clickable(enabled = false) { /* solo diseño */ }
     )
 }
+
 
 
 
