@@ -59,8 +59,8 @@ fun RecoleccionScreen(
 
             RecoleccionButton("Busca Punto", Icons.Filled.Search, onClick = onGoBuscar)
             RecoleccionButton("Agrega Punto", Icons.Filled.Add, onClick = onGoAgregar)
-            RecoleccionButton("Actualiza Punto", Icons.Outlined.Update, onClick = onGoActualizar)
-            RecoleccionButton("Valora Punto R", Icons.Outlined.ThumbUp, onClick = onGoValorar) // texto corregido
+            RecoleccionButton("Actualiza Punto", Icons.Outlined.Update, onClick = onGoActualizar) // ← usa callback
+            RecoleccionButton("Valora Punto R", Icons.Outlined.ThumbUp, onClick = onGoValorar)
         }
     }
 }

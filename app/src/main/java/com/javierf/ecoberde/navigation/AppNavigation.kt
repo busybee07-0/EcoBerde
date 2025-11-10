@@ -8,23 +8,23 @@ import com.javierf.ecoberde.ui.screens.*
 
 /** Rutas centralizadas para evitar errores de escritura */
 object Routes {
-    // 🔐 Autenticación
+    // Autenticación
     const val Login = "login"
-
-    // 🏠 Principal
+    // Home
     const val Home = "home"
 
-    // ♻️ Clasificación
+    // Clasificación
     const val Clasificacion = "clasificacion"
     const val Buscar = "buscarMaterial"
     const val Agregar = "agregarMaterial"
     const val Actualizar = "actualizarMaterial"
     const val Reciclados = "materialesReciclados"
 
-    // 🚛 Recolección
+    // Recolección
     const val Recoleccion = "recoleccion"
     const val BuscarPunto = "buscarPunto"
     const val AgregarPunto = "agregarPunto"
+    const val ActualizarPunto = "actualizarPunto"   // ← NUEVA RUTA
 }
 
 @Composable
@@ -35,8 +35,7 @@ fun AppNavigation() {
         navController = navController,
         startDestination = Routes.Login
     ) {
-
-        // 🔐 LOGIN
+        // LOGIN
         composable(Routes.Login) {
             LoginScreen(
                 onLogin = { navController.navigate(Routes.Home) },
@@ -44,12 +43,12 @@ fun AppNavigation() {
             )
         }
 
-        // 🏠 HOME
+        // HOME
         composable(Routes.Home) {
             HomeScreen(navController = navController)
         }
 
-        // ♻️ CLASIFICACIÓN
+        // CLASIFICACIÓN
         composable(Routes.Clasificacion) {
             ClasificacionScreen(
                 onBack = { navController.popBackStack() },
@@ -59,41 +58,24 @@ fun AppNavigation() {
                 onGoReciclados = { navController.navigate(Routes.Reciclados) }
             )
         }
+        composable(Routes.Buscar) { BuscarMaterialScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.Agregar) { AgregarMaterialScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.Actualizar) { ActualizarMaterialScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.Reciclados) { MaterialesRecicladosScreen(onBack = { navController.popBackStack() }) }
 
-        composable(Routes.Buscar) {
-            BuscarMaterialScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Routes.Agregar) {
-            AgregarMaterialScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Routes.Actualizar) {
-            ActualizarMaterialScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Routes.Reciclados) {
-            MaterialesRecicladosScreen(onBack = { navController.popBackStack() })
-        }
-
-        // 🚛 RECOLECCIÓN
+        // RECOLECCIÓN
         composable(Routes.Recoleccion) {
             RecoleccionScreen(
                 onBack = { navController.popBackStack() },
                 onGoBuscar = { navController.navigate(Routes.BuscarPunto) },
                 onGoAgregar = { navController.navigate(Routes.AgregarPunto) },
-                onGoActualizar = { /* navController.navigate("actualizarPunto") */ },
+                onGoActualizar = { navController.navigate(Routes.ActualizarPunto) }, // ← conectar
                 onGoValorar = { /* navController.navigate("valorarPunto") */ }
             )
         }
-
-        composable(Routes.BuscarPunto) {
-            BuscarPuntoScreen(onBack = { navController.popBackStack() })
-        }
-
-        composable(Routes.AgregarPunto) {
-            AgregarPuntoScreen(onBack = { navController.popBackStack() })
-        }
+        composable(Routes.BuscarPunto) { BuscarPuntoScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.AgregarPunto) { AgregarPuntoScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.ActualizarPunto) { ActualizarPuntoScreen(onBack = { navController.popBackStack() }) } // ← nueva pantalla
     }
 }
 
