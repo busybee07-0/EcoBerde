@@ -48,7 +48,6 @@ fun RecoleccionScreen(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título
             Text(
                 text = "Puntos Recolección",
                 fontSize = 24.sp,
@@ -58,11 +57,10 @@ fun RecoleccionScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Opciones (solo diseño)
             RecoleccionButton("Busca Punto", Icons.Filled.Search, onClick = onGoBuscar)
             RecoleccionButton("Agrega Punto", Icons.Filled.Add, onClick = onGoAgregar)
             RecoleccionButton("Actualiza Punto", Icons.Outlined.Update, onClick = onGoActualizar)
-            RecoleccionButton("Valora Punto R", Icons.Outlined.ThumbUp, onClick = onGoValorar) // ← texto corregido
+            RecoleccionButton("Valora Punto R", Icons.Outlined.ThumbUp, onClick = onGoValorar) // texto corregido
         }
     }
 }

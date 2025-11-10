@@ -10,12 +10,17 @@ import com.javierf.ecoberde.ui.screens.*
 object Routes {
     const val Login = "login"
     const val Home = "home"
+
+    // Clasificación
     const val Clasificacion = "clasificacion"
     const val Buscar = "buscarMaterial"
     const val Agregar = "agregarMaterial"
     const val Actualizar = "actualizarMaterial"
     const val Reciclados = "materialesReciclados"
+
+    // Recolección
     const val Recoleccion = "recoleccion"
+    const val BuscarPunto = "buscarPunto"
 }
 
 @Composable
@@ -49,31 +54,22 @@ fun AppNavigation() {
                 onGoReciclados = { navController.navigate(Routes.Reciclados) }
             )
         }
+        composable(Routes.Buscar) { BuscarMaterialScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.Agregar) { AgregarMaterialScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.Actualizar) { ActualizarMaterialScreen(onBack = { navController.popBackStack() }) }
+        composable(Routes.Reciclados) { MaterialesRecicladosScreen(onBack = { navController.popBackStack() }) }
 
-        // 🔍 BUSCAR MATERIAL
-        composable(Routes.Buscar) {
-            BuscarMaterialScreen(onBack = { navController.popBackStack() })
-        }
-
-        // ➕ AGREGAR MATERIAL
-        composable(Routes.Agregar) {
-            AgregarMaterialScreen(onBack = { navController.popBackStack() })
-        }
-
-        // 🔄 ACTUALIZAR MATERIAL
-        composable(Routes.Actualizar) {
-            ActualizarMaterialScreen(onBack = { navController.popBackStack() })
-        }
-
-        // 📦 MATERIALES RECICLADOS
-        composable(Routes.Reciclados) {
-            MaterialesRecicladosScreen(onBack = { navController.popBackStack() })
-        }
-
-        // 🚚 PUNTOS RECOLECCIÓN
+        // 🚚 RECOLECCIÓN
         composable(Routes.Recoleccion) {
-            RecoleccionScreen(onBack = { navController.popBackStack() })
+            RecoleccionScreen(
+                onBack = { navController.popBackStack() },
+                onGoBuscar = { navController.navigate(Routes.BuscarPunto) },
+                onGoAgregar = { /* navController.navigate("agregarPunto") */ },
+                onGoActualizar = { /* navController.navigate("actualizarPunto") */ },
+                onGoValorar = { /* navController.navigate("valorarPunto") */ }
+            )
         }
+        composable(Routes.BuscarPunto) { BuscarPuntoScreen(onBack = { navController.popBackStack() }) }
     }
 }
 
