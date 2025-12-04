@@ -60,10 +60,10 @@ fun InfoGuiaMaterialesScreen(onBack: () -> Unit = {}) {
                     .fillMaxWidth()
                     .height(220.dp)
                     .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Fit
             )
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(40.dp))
 
             /** Título */
             Text(

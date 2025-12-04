@@ -1,96 +1,165 @@
-package com.javierf.ecoberde.ui.screens
+package com.javierf.ecoberde.ui.screens.clasificacion
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.javierf.ecoberde.data.entities.Material
+import com.javierf.ecoberde.viewmodel.AppViewModelFactory
+import com.javierf.ecoberde.viewmodel.MaterialViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BuscarMaterialScreen(onBack: () -> Unit = {}) {
-    val green = Color(0xFF2E7D32)
-    var query by remember { mutableStateOf("Lata Cerveza") } // placeholder visual
+fun BuscarMaterialScreen(
+    onBack: () -> Unit = {},
+    onMaterialClick: (Long) -> Unit = {}   // ← este viene desde Navigation
+) {
+
+    val context = LocalContext.current
+    val factory = AppViewModelFactory(context)
+    val materialVM: MaterialViewModel = viewModel(factory = factory)
+
+    // lista original
+    val materiales by materialVM.materiales.collectAsState()
+
+    // estado para filtrar
+    var query by remember { mutableStateOf("") }
+
+    // cargo datos al entrar
+    LaunchedEffect(Unit) {
+        materialVM.cargarMateriales()
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {},
+                title = { Text("Buscar Material") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "volver")
                     }
                 }
             )
         }
     ) { inner ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(inner)
-                .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(12.dp)
         ) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Busca Material",
-                fontSize = 24.sp,
-                color = green,
-                fontWeight = FontWeight.ExtraBold
-            )
 
-            Spacer(Modifier.height(16.dp))
-
-            // Caja de búsqueda (sin lógica)
+            // busqueda (esto va arriba)
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    IconButton(onClick = { /* sin acción por ahora */ }) {
-                        Icon(Icons.Outlined.Search, contentDescription = "Buscar")
-                    }
-                }
+                label = { Text("Buscar por nombre") }
             )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Tarjeta de resultado/imagen (placeholder)
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp),
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
+            // filtro basico
+            val filtrados = remember(query, materiales) {
+                if (query.isBlank()) materiales
+                else materiales.filter {
+                    it.nombre.contains(query, ignoreCase = true)
+                }
+            }
+
+            if (filtrados.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        // Ícono de “tocar” para simular que es clickeable
-                        Icon(
-                            imageVector = Icons.Outlined.TouchApp,
-                            contentDescription = "Tocar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(36.dp)
+                    Text("No se encontraron materiales")
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(filtrados) { material ->
+                        MaterialCard(
+                            material = material,
+                            onClick = { onMaterialClick(material.idMaterial) }
                         )
-                        Spacer(Modifier.height(8.dp))
-                        Text("Imagen / tarjeta del material", color = Color.Gray)
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+fun MaterialCard(material: Material, onClick: () -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
+    ) {
+
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            // cuadro para la imagen
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .background(Color(0xFFEFEFEF), RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (material.fotoUri != null) {
+                    // aqui cargo la foto guardada
+                    AsyncImage(
+                        model = material.fotoUri,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text("Sin foto", color = Color.Gray)
+                }
+            }
+
+            Spacer(Modifier.height(10.dp))
+
+            // nombre
+            Text(
+                text = material.nombre,
+                color = Color(0xFF1B5E20),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+
+
 

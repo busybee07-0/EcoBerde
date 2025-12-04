@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
 }
 
 android {
@@ -29,13 +30,17 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true   // ← SOLO ESTO SE AGREGÓ
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
@@ -59,11 +64,19 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(platform("androidx.compose:compose-bom:2024.09.02"))
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended") // ← importante
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
+    // Coil (imágenes)
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil:2.5.0")
+
+    // ← SOLO ESTO SE AGREGA
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
-
-

@@ -1,7 +1,9 @@
 package com.javierf.ecoberde.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Delete
@@ -12,22 +14,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.javierf.ecoberde.navigation.Routes
 import kotlinx.coroutines.launch
+import com.javierf.ecoberde.navigation.Routes
+import com.javierf.ecoberde.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val greenDark = Color(0xFF1B5E20)
     val green = Color(0xFF2E7D32)
+    val greenDark = Color(0xFF1B5E20)
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -35,56 +43,136 @@ fun HomeScreen(navController: NavController) {
             DrawerSheet(
                 greenDark = greenDark,
                 onNavigateToClasificacion = {
-                    scope.launch { drawerState.close(); navController.navigate(Routes.Clasificacion) }
+                    scope.launch {
+                        drawerState.close()
+                        navController.navigate(Routes.Clasificacion)
+                    }
                 },
+                // rutas corregidas
                 onNavigateToRecoleccion = {
-                    scope.launch { drawerState.close(); navController.navigate(Routes.Recoleccion) }
+                    scope.launch {
+                        drawerState.close()
+                        navController.navigate(Routes.InfoReciclaje)
+                    }
                 },
                 onNavigateToGanancias = {
-                    scope.launch { drawerState.close(); navController.navigate(Routes.Ganancias) }
+                    scope.launch {
+                        drawerState.close()
+                        navController.navigate(Routes.InfoRRR)
+                    }
                 },
                 onNavigateToImpacto = {
-                    scope.launch { drawerState.close(); navController.navigate(Routes.Impacto) }
+                    scope.launch {
+                        drawerState.close()
+                        navController.navigate(Routes.ImpactoMedioambiental)
+                    }
                 }
             )
         }
     ) {
+
         Scaffold(
+            containerColor = Color.White,
             topBar = {
                 TopAppBar(
                     title = {},
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Filled.Menu, contentDescription = "Menú")
+                            Icon(Icons.Filled.Menu, contentDescription = "Menú", tint = greenDark)
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
                 )
             }
         ) { innerPadding ->
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
+                    .padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.Start
             ) {
+
                 Spacer(Modifier.height(8.dp))
+
                 Text(
                     text = "Página Principal",
                     fontSize = 28.sp,
                     color = green,
                     fontWeight = FontWeight.ExtraBold
                 )
-                Spacer(Modifier.height(16.dp))
 
-                // Lista de secciones (solo diseño)
-                HomeLink("¿Qué es RRR?", greenDark)
-                HomeLink("¿Qué es el reciclaje?", greenDark)
-                HomeLink("Guía materiales reciclables", greenDark)
-                HomeLink("¿Por qué es importante reciclar?", greenDark)
-                HomeLink("Impacto positivo medioambiente", greenDark)
+                Spacer(Modifier.height(20.dp))
+
+                HomeCardWithImage(
+                    title = "¿Qué es RRR?",
+                    image = R.drawable.banner_rrr,
+                    onClick = { navController.navigate(Routes.InfoRRR) }
+                )
+
+                HomeCardWithImage(
+                    title = "¿Qué es el reciclaje?",
+                    image = R.drawable.banner_reciclaje,
+                    onClick = { navController.navigate(Routes.InfoReciclaje) }
+                )
+
+                HomeCardWithImage(
+                    title = "Guía materiales reciclables",
+                    image = R.drawable.banner_guia,
+                    onClick = { navController.navigate(Routes.GuiaMateriales) }
+                )
+
+                HomeCardWithImage(
+                    title = "¿Por qué es importante reciclar?",
+                    image = R.drawable.banner_importancia,
+                    onClick = { navController.navigate(Routes.ImportanciaReciclar) }
+                )
+
+                HomeCardWithImage(
+                    title = "Impacto positivo medioambiente",
+                    image = R.drawable.banner_impacto,
+                    onClick = { navController.navigate(Routes.ImpactoMedioambiental) }
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun HomeCardWithImage(title: String, image: Int, onClick: () -> Unit) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(55.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(Modifier.width(16.dp))
+
+            Text(
+                text = title,
+                color = Color(0xFF1B5E20),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }
@@ -98,9 +186,11 @@ private fun DrawerSheet(
     onNavigateToImpacto: () -> Unit
 ) {
     ModalDrawerSheet(
-        modifier = Modifier.width(260.dp)
+        modifier = Modifier.width(260.dp),
+        drawerContainerColor = Color.White
     ) {
         Spacer(Modifier.height(12.dp))
+
         Text(
             text = "Menú",
             color = greenDark,
@@ -113,47 +203,28 @@ private fun DrawerSheet(
             selected = false,
             onClick = onNavigateToClasificacion,
             label = { Text("Clasificación") },
-            icon = { Icon(Icons.Outlined.Recycling, contentDescription = null, tint = greenDark) },
-            modifier = Modifier.padding(horizontal = 8.dp)
+            icon = { Icon(Icons.Outlined.Recycling, contentDescription = null, tint = greenDark) }
         )
 
         NavigationDrawerItem(
             selected = false,
             onClick = onNavigateToRecoleccion,
             label = { Text("Recolección") },
-            icon = { Icon(Icons.Outlined.Delete, contentDescription = null, tint = greenDark) },
-            modifier = Modifier.padding(horizontal = 8.dp)
+            icon = { Icon(Icons.Outlined.Delete, contentDescription = null, tint = greenDark) }
         )
 
         NavigationDrawerItem(
             selected = false,
             onClick = onNavigateToGanancias,
             label = { Text("Ganancias") },
-            icon = { Icon(Icons.Outlined.Money, contentDescription = null, tint = greenDark) },
-            modifier = Modifier.padding(horizontal = 8.dp)
+            icon = { Icon(Icons.Outlined.Money, contentDescription = null, tint = greenDark) }
         )
 
         NavigationDrawerItem(
             selected = false,
             onClick = onNavigateToImpacto,
             label = { Text("Impacto") },
-            icon = { Icon(Icons.Outlined.Eco, contentDescription = null, tint = greenDark) }, // icono de hoja
-            modifier = Modifier.padding(horizontal = 8.dp)
+            icon = { Icon(Icons.Outlined.Eco, contentDescription = null, tint = greenDark) }
         )
     }
 }
-
-@Composable
-private fun HomeLink(text: String, color: Color) {
-    Text(
-        text = text,
-        color = color,
-        fontSize = 16.sp,
-        modifier = Modifier
-            .padding(vertical = 8.dp)
-            .clickable(enabled = false) { /* solo diseño */ }
-    )
-}
-
-
-

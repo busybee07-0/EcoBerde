@@ -1,111 +1,144 @@
 package com.javierf.ecoberde.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.javierf.ecoberde.ui.screens.*
 
-/** Rutas centralizadas */
+import com.javierf.ecoberde.ui.screens.*
+import com.javierf.ecoberde.ui.info.*
+import com.javierf.ecoberde.ui.screens.clasificacion.*
+
 object Routes {
-    // Auth
     const val Login = "login"
-    // Home
     const val Home = "home"
 
-    // Clasificación
     const val Clasificacion = "clasificacion"
-    const val Buscar = "buscarMaterial"
-    const val Agregar = "agregarMaterial"
-    const val Actualizar = "actualizarMaterial"
-    const val Reciclados = "materialesReciclados"
+    const val BuscarMaterial = "buscarMaterial"
+    const val AgregarMaterial = "agregarMaterial"
+    const val ActualizarMaterial = "actualizarMaterial"
+    const val Reciclados = "reciclados"
 
-    // Recolección
-    const val Recoleccion = "recoleccion"
-    const val BuscarPunto = "buscarPunto"
-    const val AgregarPunto = "agregarPunto"
-    const val ActualizarPunto = "actualizarPunto"
-    const val ValorarPunto = "valorarPunto"
-
-    // Ganancias
-    const val Ganancias = "ganancias"
-
-    // Impacto
-    const val Impacto = "impacto"
+    const val InfoRRR = "infoRRR"
+    const val InfoReciclaje = "infoReciclaje"
+    const val GuiaMateriales = "guiaMateriales"
+    const val ImportanciaReciclar = "importanciaReciclar"
+    const val ImpactoMedioambiental = "impactoMedioambiental"
 }
 
 @Composable
 fun AppNavigation() {
+
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
         startDestination = Routes.Login
     ) {
-        // LOGIN
+
         composable(Routes.Login) {
             LoginScreen(
                 onLogin = { navController.navigate(Routes.Home) },
-                onRegister = { /* no-op */ }
+                onRegister = {}
             )
         }
 
-        // HOME
         composable(Routes.Home) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController)
         }
 
-        // CLASIFICACIÓN
         composable(Routes.Clasificacion) {
             ClasificacionScreen(
                 onBack = { navController.popBackStack() },
-                onGoBuscar = { navController.navigate(Routes.Buscar) },
-                onGoAgregar = { navController.navigate(Routes.Agregar) },
-                onGoActualizar = { navController.navigate(Routes.Actualizar) },
+                onGoBuscar = { navController.navigate(Routes.BuscarMaterial) },
+                onGoAgregar = { navController.navigate(Routes.AgregarMaterial) },
+                onGoActualizar = { navController.navigate(Routes.ActualizarMaterial) },
                 onGoReciclados = { navController.navigate(Routes.Reciclados) }
             )
         }
-        composable(Routes.Buscar) { BuscarMaterialScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.Agregar) { AgregarMaterialScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.Actualizar) { ActualizarMaterialScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.Reciclados) { MaterialesRecicladosScreen(onBack = { navController.popBackStack() }) }
 
-        // RECOLECCIÓN
-        composable(Routes.Recoleccion) {
-            RecoleccionScreen(
+        composable(Routes.BuscarMaterial) {
+            BuscarMaterialScreen(
                 onBack = { navController.popBackStack() },
-                onGoBuscar = { navController.navigate(Routes.BuscarPunto) },
-                onGoAgregar = { navController.navigate(Routes.AgregarPunto) },
-                onGoActualizar = { navController.navigate(Routes.ActualizarPunto) },
-                onGoValorar = { navController.navigate(Routes.ValorarPunto) }
-            )
-        }
-        composable(Routes.BuscarPunto) { BuscarPuntoScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.AgregarPunto) { AgregarPuntoScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.ActualizarPunto) { ActualizarPuntoScreen(onBack = { navController.popBackStack() }) }
-        composable(Routes.ValorarPunto) { ValorarPuntoScreen(onBack = { navController.popBackStack() }) }
-
-        // GANANCIAS
-        composable(Routes.Ganancias) {
-            GananciasScreen(
-                onBack = { navController.popBackStack() },
-                onCalcular = { /* TODO */ },
-                onDetalle = { /* TODO */ },
-                onHistorial = { /* TODO */ },
-                onAgregarMateriales = { /* TODO */ }
+                onMaterialClick = { id ->
+                    navController.navigate("${Routes.ActualizarMaterial}/$id")
+                }
             )
         }
 
-        // IMPACTO
-        composable(Routes.Impacto) {
-            ImpactoScreen(
+        composable(Routes.AgregarMaterial) {
+            AgregarMaterialScreen(
+                idMaterial = null,
                 onBack = { navController.popBackStack() },
-                onCalcular = { /* TODO */ },
-                onDetalle = { /* TODO */ },
-                onHistorial = { /* TODO */ },
-                onAgregarMateriales = { /* TODO */ }
+                onSaved = { navController.popBackStack() }
             )
+        }
+
+        composable(
+            route = "${Routes.AgregarMaterial}/{idMaterial}",
+            arguments = listOf(navArgument("idMaterial") { type = NavType.LongType })
+        ) { back ->
+            val idMaterial = back.arguments?.getLong("idMaterial")
+            AgregarMaterialScreen(
+                idMaterial = idMaterial,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.ActualizarMaterial) {
+            ActualizarMaterialScreen(
+                onBack = { navController.popBackStack() },
+                onMaterialClick = { id ->
+                    navController.navigate("${Routes.ActualizarMaterial}/$id")
+                }
+            )
+        }
+
+        composable(
+            route = "${Routes.ActualizarMaterial}/{idMaterial}",
+            arguments = listOf(navArgument("idMaterial") { type = NavType.LongType })
+        ) { back ->
+            val idMaterial = back.arguments?.getLong("idMaterial") ?: 0L
+
+            DetalleMaterialScreen(
+                idMaterial = idMaterial,
+                onBack = { navController.popBackStack() },
+                onEdit = { id ->
+                    navController.navigate("${Routes.AgregarMaterial}/$id")
+                },
+                onDeleteDone = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.Reciclados) {
+            MaterialesRecicladosScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.InfoRRR) {
+            InfoRRRScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.InfoReciclaje) {
+            InfoReciclajeScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.GuiaMateriales) {
+            InfoGuiaMaterialesScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.ImportanciaReciclar) {
+            ImportanciaReciclarScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.ImpactoMedioambiental) {
+            ImpactoMedioambienteInfoScreen(onBack = { navController.popBackStack() })
         }
     }
 }
+
 

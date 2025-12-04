@@ -1,4 +1,4 @@
-package com.javierf.ecoberde.ui.screens
+package com.javierf.ecoberde.ui.screens.clasificacion
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -27,7 +27,6 @@ fun ClasificacionScreen(
     onGoReciclados: () -> Unit = {}
 ) {
     val green = Color(0xFF2E7D32)
-    val greenDark = Color(0xFF1B5E20)
 
     Scaffold(
         topBar = {
@@ -48,7 +47,7 @@ fun ClasificacionScreen(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ícono principal
+
             Icon(
                 imageVector = Icons.Filled.Recycling,
                 contentDescription = "Reciclaje",
@@ -58,7 +57,6 @@ fun ClasificacionScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            // Título
             Text(
                 text = "Clasificación Residuos",
                 fontSize = 24.sp,
@@ -68,7 +66,6 @@ fun ClasificacionScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Botones de navegación
             ClasificacionButton("Busca Material", Icons.Filled.Search, onClick = onGoBuscar)
             ClasificacionButton("Agrega Material", Icons.Filled.Add, onClick = onGoAgregar)
             ClasificacionButton("Actualiza Material", Icons.Outlined.Update, onClick = onGoActualizar)
@@ -84,6 +81,7 @@ private fun ClasificacionButton(
     onClick: () -> Unit = {}
 ) {
     val greenDark = Color(0xFF1B5E20)
+
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier

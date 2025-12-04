@@ -18,8 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.javierf.ecoberde.data.entities.Material
@@ -29,6 +27,7 @@ import com.javierf.ecoberde.viewmodel.MaterialViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarMaterialScreen(
+    idMaterial: Long? = null,
     onBack: () -> Unit = {},
     onSaved: () -> Unit = {}
 ) {
@@ -44,17 +43,35 @@ fun AgregarMaterialScreen(
     var punto by remember { mutableStateOf("") }
     var fotoUri by remember { mutableStateOf<Uri?>(null) }
 
+    // Cargar datos si estamos editando
+    LaunchedEffect(idMaterial) {
+        if (idMaterial != null) {
+            val m = materialVM.obtenerPorId(idMaterial)
+            if (m != null) {
+                nombre = m.nombre
+                tipo = m.tipo
+                categoria = m.categoria
+                descripcion = m.descripcion
+                punto = m.puntoReciclaje
+                fotoUri = m.fotoUri?.let { Uri.parse(it) }
+            }
+        }
+    }
+
+    // Abrir galería
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri -> fotoUri = uri }
+    ) { uri ->
+        fotoUri = uri
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Agregar Material") },
+                title = { Text(if (idMaterial == null) "Agregar Material" else "Actualizar Material") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "volver")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
                     }
                 }
             )
@@ -65,11 +82,10 @@ fun AgregarMaterialScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(inner)
-                .padding(horizontal = 20.dp)
+                .padding(20.dp)
         ) {
 
-            Spacer(Modifier.height(12.dp))
-
+            // Foto preview
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -94,35 +110,41 @@ fun AgregarMaterialScreen(
             Button(
                 onClick = { pickImageLauncher.launch("image/*") },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2E7D32)
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
             ) {
                 Text("Seleccionar Imagen", color = Color.White)
             }
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(14.dp))
 
-            // Nombre
-            FormField(value = nombre, label = "Nombre") { nombre = it }
 
-            // ---------- SELECT TIPO ----------
+            /** ------ CAMPOS ------- */
+
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            // SELECT TIPO
             val tipos = listOf("Plástico", "Vidrio", "Orgánico", "Metal", "Papel/Cartón", "Tetra Pak", "Textil", "Electrónicos")
             var expandedTipo by remember { mutableStateOf(false) }
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-
+            Box(Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = tipo,
-                    onValueChange = { },
-                    label = { Text("Tipo") },
-                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = {},
                     readOnly = true,
+                    label = { Text("Tipo") },
                     trailingIcon = {
                         IconButton(onClick = { expandedTipo = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 DropdownMenu(
@@ -141,25 +163,24 @@ fun AgregarMaterialScreen(
                 }
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(10.dp))
 
-            // ---------- SELECT CATEGORIA ----------
+            // SELECT CATEGORIA
             val categorias = listOf("Reciclable", "No reciclable", "Peligroso", "Reutilizable")
             var expandedCategoria by remember { mutableStateOf(false) }
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-
+            Box(Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = categoria,
-                    onValueChange = { },
-                    label = { Text("Categoría") },
-                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = {},
                     readOnly = true,
+                    label = { Text("Categoría") },
                     trailingIcon = {
                         IconButton(onClick = { expandedCategoria = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 DropdownMenu(
@@ -178,16 +199,33 @@ fun AgregarMaterialScreen(
                 }
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(10.dp))
 
-            FormField(value = descripcion, label = "Descripción") { descripcion = it }
-            FormField(value = punto, label = "Punto de Reciclaje") { punto = it }
+            OutlinedTextField(
+                value = descripcion,
+                onValueChange = { descripcion = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = punto,
+                onValueChange = { punto = it },
+                label = { Text("Punto de Reciclaje") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(Modifier.height(20.dp))
+
+
+            /** ------ GUARDAR ------- */
 
             Button(
                 onClick = {
                     val material = Material(
+                        idMaterial = idMaterial ?: 0L,
                         nombre = nombre,
                         tipo = tipo,
                         categoria = categoria,
@@ -196,36 +234,21 @@ fun AgregarMaterialScreen(
                         fotoUri = fotoUri?.toString()
                     )
 
-                    materialVM.agregar(material) {
-                        onSaved()
+                    if (idMaterial == null) {
+                        // NUEVO
+                        materialVM.agregar(material) { onSaved() }
+                    } else {
+                        // ACTUALIZAR
+                        materialVM.modificar(material) { onSaved() }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1B5E20)
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20))
             ) {
-                Text("Guardar", color = Color.White)
+                Text(if (idMaterial == null) "Guardar" else "Actualizar", color = Color.White)
             }
 
             Spacer(Modifier.height(30.dp))
         }
     }
-}
-
-@Composable
-private fun FormField(value: String, label: String, onValueChange: (String) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        label = { Text(label) },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF5F5F5),
-            unfocusedContainerColor = Color(0xFFF5F5F5),
-            disabledContainerColor = Color(0xFFE0E0E0)
-        )
-    )
 }
