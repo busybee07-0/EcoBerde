@@ -1,51 +1,37 @@
 package com.javierf.ecoberde.data.entities
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+// Esta clase representa un material tal como lo voy a guardar en Firestore.
+// Firestore necesita que todos los campos tengan valores por defecto para poder reconstruir el objeto.
 
-@Entity(tableName = "materiales")
 data class Material(
 
-    // id autogenerado
-    @PrimaryKey(autoGenerate = true)
-    val idMaterial: Long = 0L,
+    // Este será el ID del documento en Firestore.
+    // Ya no lo genero yo: Firestore me lo da cuando agrego un material nuevo.
+    val idMaterial: String? = null,
 
-    // nombre del material
+    // Nombre del material (ej: "Botella PET")
     val nombre: String = "",
 
-    // tipo: plástico, vidrio, orgánico, etc.
+    // Tipo general (plástico, vidrio, orgánico, etc.)
     val tipo: String = "",
 
-    // categoría: reciclable, no reciclable, peligroso, etc.
+    // Categoría (reciclable, no reciclable, peligroso, etc.)
     val categoria: String = "",
 
-    // info corta del material
+    // Descripción corta para mostrar en detalles
     val descripcion: String = "",
 
-    // punto donde normalmente se recicla
+    // Punto donde normalmente se recicla (ej: "Punto Verde Ubaté")
     val puntoReciclaje: String = "",
 
-    // uri de la foto elegida por el usuario (guardado como texto)
-    // lo dejo así porque así lo puedo cargar fácil desde la galería
+    // Aquí voy a guardar la URL de la imagen que subo a Firebase Storage.
+    // Así la imagen no se pierde si reinstalo la app o cambio de celular.
     val fotoUri: String? = null
 ) {
 
-    // validar datos antes de guardar
-    // esto lo uso para que no se guarden campos vacíos
+    // Esta función la uso para validar antes de guardar.
+    // Me aseguro de que no se envíen datos vacíos a Firebase.
     fun validarDatos(): Boolean {
         return nombre.isNotBlank() && tipo.isNotBlank() && categoria.isNotBlank()
-    }
-
-    // actualizar usando un objeto que ya tenga los cambios
-    // esto solo ayuda a simplificar cuando edite un material
-    fun actualizarMaterial(nuevo: Material): Material {
-        return this.copy(
-            nombre = nuevo.nombre,
-            tipo = nuevo.tipo,
-            categoria = nuevo.categoria,
-            descripcion = nuevo.descripcion,
-            puntoReciclaje = nuevo.puntoReciclaje,
-            fotoUri = nuevo.fotoUri
-        )
     }
 }
