@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1026504713648",
+    "project_id": "ecoberde",
+    "storage_bucket": "ecoberde.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026504713648:android:b0d6cca123d2340cd76275",
+        "android_client_info": {
+          "package_name": "com.javierf.ecoberde"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI2-3ZCkhvJFTAW51co-s1to74dLjMzmM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

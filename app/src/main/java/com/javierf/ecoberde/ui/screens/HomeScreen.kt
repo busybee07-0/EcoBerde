@@ -42,29 +42,30 @@ fun HomeScreen(navController: NavController) {
         drawerContent = {
             DrawerSheet(
                 greenDark = greenDark,
+
+                // Aquí corregimos las rutas del menú:
                 onNavigateToClasificacion = {
                     scope.launch {
                         drawerState.close()
                         navController.navigate(Routes.Clasificacion)
                     }
                 },
-                // rutas corregidas
                 onNavigateToRecoleccion = {
                     scope.launch {
                         drawerState.close()
-                        navController.navigate(Routes.InfoReciclaje)
+                        navController.navigate(Routes.Recoleccion)
                     }
                 },
                 onNavigateToGanancias = {
                     scope.launch {
                         drawerState.close()
-                        navController.navigate(Routes.InfoRRR)
+                        navController.navigate(Routes.Ganancias)
                     }
                 },
                 onNavigateToImpacto = {
                     scope.launch {
                         drawerState.close()
-                        navController.navigate(Routes.ImpactoMedioambiental)
+                        navController.navigate(Routes.Impacto)
                     }
                 }
             )
