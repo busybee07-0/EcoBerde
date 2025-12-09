@@ -10,10 +10,11 @@ import androidx.navigation.compose.rememberNavController
 import com.javierf.ecoberde.ui.screens.*
 import com.javierf.ecoberde.ui.info.*
 import com.javierf.ecoberde.ui.screens.clasificacion.*
+import com.javierf.ecoberde.ui.screens.ganancias.GananciasScreen
+import com.javierf.ecoberde.ui.screens.ganancias.RegistroMaterialesScreen
 
 /**
- * OBJETO RUTAS — SIN CAMBIOS
- * Estas rutas ya sirven en todo el proyecto.
+ * OBJETO RUTAS
  */
 object Routes {
     const val Login = "login"
@@ -37,6 +38,9 @@ object Routes {
     const val GuiaMateriales = "guiaMateriales"
     const val ImportanciaReciclar = "importanciaReciclar"
     const val ImpactoMedioambiental = "impactoMedioambiental"
+
+    // GANANCIAS SUBRUTAS
+    const val RegistroMaterial = "registroMaterial"
 }
 
 @Composable
@@ -67,7 +71,7 @@ fun AppNavigation() {
         }
 
         // ============================================================
-        // CLASIFICACIÓN (PANTALLA PRINCIPAL)
+        // CLASIFICACIÓN — PANTALLA PRINCIPAL
         // ============================================================
         composable(Routes.Clasificacion) {
             ClasificacionScreen(
@@ -80,7 +84,7 @@ fun AppNavigation() {
         }
 
         // ============================================================
-        // CRUD CLASIFICACIÓN (SECUNDARIAS)
+        // CRUD CLASIFICACIÓN
         // ============================================================
         composable(Routes.BuscarMaterial) {
             BuscarMaterialScreen(onBack = { navController.popBackStack() })
@@ -105,9 +109,8 @@ fun AppNavigation() {
         composable(
             route = "${Routes.ActualizarMaterial}/{idMaterial}",
             arguments = listOf(navArgument("idMaterial") { type = NavType.LongType })
-        ) { back ->
-            val idMaterial = back.arguments?.getLong("idMaterial") ?: 0L
-
+        ) { backStackEntry ->
+            val idMaterial = backStackEntry.arguments?.getLong("idMaterial") ?: 0L
             DetalleMaterialScreen(
                 idMaterial = idMaterial,
                 onBack = { navController.popBackStack() },
@@ -123,38 +126,45 @@ fun AppNavigation() {
         }
 
         // ============================================================
-        // RECOLECCIÓN (PANTALLA PRINCIPAL)
+        // RECOLECCIÓN
         // ============================================================
         composable(Routes.Recoleccion) {
             RecoleccionScreen(
                 onBack = { navController.popBackStack() },
-                onGoBuscar = { /* futuro */ },
-                onGoAgregar = { /* futuro */ },
-                onGoActualizar = { /* futuro */ },
-                onGoValorar = { /* futuro */ }
+                onGoBuscar = { /* pendiente */ },
+                onGoAgregar = { /* pendiente */ },
+                onGoActualizar = { /* pendiente */ },
+                onGoValorar = { /* pendiente */ }
             )
         }
 
         // ============================================================
-        // GANANCIAS (PANTALLA PRINCIPAL)
+        // GANANCIAS
         // ============================================================
         composable(Routes.Ganancias) {
             GananciasScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onAgregarMateriales = { navController.navigate(Routes.RegistroMaterial) }
+            )
+        }
+
+        // SUBPANTALLA: REGISTRAR MATERIALES
+        composable(Routes.RegistroMaterial) {
+            RegistroMaterialesScreen(
+                onBack = { navController.popBackStack() },
+                onMaterialGuardado = { navController.popBackStack() }
             )
         }
 
         // ============================================================
-        // IMPACTO (PANTALLA PRINCIPAL)
+        // IMPACTO
         // ============================================================
         composable(Routes.Impacto) {
-            ImpactoScreen(
-                onBack = { navController.popBackStack() }
-            )
+            ImpactoScreen(onBack = { navController.popBackStack() })
         }
 
         // ============================================================
-        // INFO DEL HOME (SECUNDARIAS)
+        // INFO (HOME)
         // ============================================================
         composable(Routes.InfoRRR) {
             InfoRRRScreen(onBack = { navController.popBackStack() })
@@ -177,8 +187,6 @@ fun AppNavigation() {
         }
     }
 }
-
-
 
 
 

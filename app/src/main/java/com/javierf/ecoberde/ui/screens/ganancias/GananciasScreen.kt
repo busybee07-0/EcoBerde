@@ -1,6 +1,8 @@
-package com.javierf.ecoberde.ui.screens
+package com.javierf.ecoberde.ui.screens.ganancias
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -11,10 +13,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
+// --------- FORMATEO FECHA (Fix del día anterior) ----------
+fun Long.toLocalDateString(): String {
+    val localDate = Instant.ofEpochMilli(this)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+    return localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GananciasScreen(
+    viewModel: GananciasViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onBack: () -> Unit = {},
     onCalcular: () -> Unit = {},
     onDetalle: () -> Unit = {},
@@ -24,8 +40,9 @@ fun GananciasScreen(
     val green = Color(0xFF2E7D32)
     val greenLight = Color(0xFFC8E6C9)
 
-    // Estado del DatePicker
-    val datePickerState = rememberDatePickerState()  // selecciona hoy por defecto
+    val datePickerState = rememberDatePickerState()
+
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -38,12 +55,14 @@ fun GananciasScreen(
                 }
             )
         }
-    ) { inner ->
+    ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(inner)
-                .padding(horizontal = 20.dp),
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(8.dp))
@@ -56,33 +75,41 @@ fun GananciasScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // 📅 Calendario real (inline)
+            // ---------- CALENDARIO ----------
             DatePicker(
                 state = datePickerState,
-                showModeToggle = true,        // botón para cambiar a vista mes/año
-                title = null,                  // como en tu mock
-                headline = null,               // evita header grande
+                showModeToggle = true,
+                title = null,
+                headline = null,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(Modifier.height(16.dp))
 
-            // (Opcional) fecha seleccionada — solo visual
-            val selectedDateMillis = datePickerState.selectedDateMillis
-            if (selectedDateMillis != null) {
+            val selectedDate = datePickerState.selectedDateMillis
+
+            if (selectedDate != null) {
+                val fecha = selectedDate.toLocalDateString()
+
+                // Guardar fecha en ViewModel
+                LaunchedEffect(fecha) {
+                    viewModel.seleccionarFecha(fecha)
+                }
+
                 Text(
-                    text = "Fecha seleccionada: ${java.text.SimpleDateFormat("dd MMM yyyy").format(java.util.Date(selectedDateMillis))}",
+                    text = "Fecha seleccionada: $fecha",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
+
                 Spacer(Modifier.height(8.dp))
             }
 
-            // Botones solicitados (sin lógica)
+            // ---------- BOTONES ----------
             ActionButton("Calcular Ganancias", onCalcular, greenLight)
             ActionButton("Detalle Ganancias", onDetalle, greenLight)
             ActionButton("Historial Ganancias", onHistorial, greenLight)
-            ActionButton("Agrega Materiales", onAgregarMateriales, greenLight)
+            ActionButton("Agregar Materiales", onAgregarMateriales, greenLight)
         }
     }
 }
@@ -103,3 +130,4 @@ private fun ActionButton(
         Text(text, color = Color.Black, fontWeight = FontWeight.Bold)
     }
 }
+
