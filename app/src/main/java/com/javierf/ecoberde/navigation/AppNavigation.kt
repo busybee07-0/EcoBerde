@@ -4,18 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.javierf.ecoberde.ui.screens.*
 import com.javierf.ecoberde.ui.info.*
 import com.javierf.ecoberde.ui.screens.clasificacion.*
-import com.javierf.ecoberde.ui.screens.ganancias.GananciasScreen
-import com.javierf.ecoberde.ui.screens.ganancias.RegistroMaterialesScreen
+import com.javierf.ecoberde.ui.screens.ganancias.*
+import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
 
-/**
- * OBJETO RUTAS
- */
 object Routes {
     const val Login = "login"
     const val Home = "home"
@@ -32,21 +30,25 @@ object Routes {
     const val ActualizarMaterial = "actualizarMaterial"
     const val Reciclados = "reciclados"
 
+    // 🟢 GANANCIAS
+    const val RegistroMaterial = "registroMaterial"
+    const val CalcularGanancias = "calcularGanancias"
+    const val DetalleGanancias = "detalleGanancias"
+    const val HistorialGanancias = "historialGanancias"
+
     // INFO (Home)
     const val InfoRRR = "infoRRR"
     const val InfoReciclaje = "infoReciclaje"
     const val GuiaMateriales = "guiaMateriales"
     const val ImportanciaReciclar = "importanciaReciclar"
     const val ImpactoMedioambiental = "impactoMedioambiental"
-
-    // GANANCIAS SUBRUTAS
-    const val RegistroMaterial = "registroMaterial"
 }
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+    val gananciasViewModel: GananciasViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -71,7 +73,7 @@ fun AppNavigation() {
         }
 
         // ============================================================
-        // CLASIFICACIÓN — PANTALLA PRINCIPAL
+        // CLASIFICACIÓN
         // ============================================================
         composable(Routes.Clasificacion) {
             ClasificacionScreen(
@@ -83,9 +85,6 @@ fun AppNavigation() {
             )
         }
 
-        // ============================================================
-        // CRUD CLASIFICACIÓN
-        // ============================================================
         composable(Routes.BuscarMaterial) {
             BuscarMaterialScreen(onBack = { navController.popBackStack() })
         }
@@ -109,8 +108,9 @@ fun AppNavigation() {
         composable(
             route = "${Routes.ActualizarMaterial}/{idMaterial}",
             arguments = listOf(navArgument("idMaterial") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val idMaterial = backStackEntry.arguments?.getLong("idMaterial") ?: 0L
+        ) { back ->
+            val idMaterial = back.arguments?.getLong("idMaterial") ?: 0L
+
             DetalleMaterialScreen(
                 idMaterial = idMaterial,
                 onBack = { navController.popBackStack() },
@@ -126,68 +126,81 @@ fun AppNavigation() {
         }
 
         // ============================================================
-        // RECOLECCIÓN
+        // RECOLECCIÓN (placeholder)
         // ============================================================
         composable(Routes.Recoleccion) {
             RecoleccionScreen(
                 onBack = { navController.popBackStack() },
-                onGoBuscar = { /* pendiente */ },
-                onGoAgregar = { /* pendiente */ },
-                onGoActualizar = { /* pendiente */ },
-                onGoValorar = { /* pendiente */ }
+                onGoBuscar = { /* futuro */ },
+                onGoAgregar = { /* futuro */ },
+                onGoActualizar = { /* futuro */ },
+                onGoValorar = { /* futuro */ }
             )
         }
 
         // ============================================================
-        // GANANCIAS
+        // 🟢 GANANCIAS
         // ============================================================
         composable(Routes.Ganancias) {
             GananciasScreen(
                 onBack = { navController.popBackStack() },
+                onCalcular = { navController.navigate(Routes.CalcularGanancias) },
+                onDetalle = { navController.navigate(Routes.DetalleGanancias) },
+                onHistorial = { navController.navigate(Routes.HistorialGanancias) },
                 onAgregarMateriales = { navController.navigate(Routes.RegistroMaterial) }
             )
         }
 
-        // SUBPANTALLA: REGISTRAR MATERIALES
+        // Registrar material (ya la tienes hecha, solo la mostramos)
         composable(Routes.RegistroMaterial) {
             RegistroMaterialesScreen(
+                viewModel = gananciasViewModel,
+                fechaSeleccionada = "",   // por ahora sin lógica de fecha
                 onBack = { navController.popBackStack() },
                 onMaterialGuardado = { navController.popBackStack() }
             )
         }
 
+        // ▼▼▼ NUEVAS PANTALLAS VACÍAS PERO FUNCIONALES ▼▼▼
+        composable(Routes.CalcularGanancias) {
+            CalcularGananciasScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.DetalleGanancias) {
+            DetalleGananciasScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.HistorialGanancias) {
+            HistorialGananciasScreen(onBack = { navController.popBackStack() })
+        }
+        // ▲▲▲ FIN GANANCIAS ▲▲▲
+
         // ============================================================
         // IMPACTO
         // ============================================================
         composable(Routes.Impacto) {
-            ImpactoScreen(onBack = { navController.popBackStack() })
+            ImpactoScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         // ============================================================
-        // INFO (HOME)
+        // INFO HOME
         // ============================================================
         composable(Routes.InfoRRR) {
             InfoRRRScreen(onBack = { navController.popBackStack() })
         }
-
         composable(Routes.InfoReciclaje) {
             InfoReciclajeScreen(onBack = { navController.popBackStack() })
         }
-
         composable(Routes.GuiaMateriales) {
             InfoGuiaMaterialesScreen(onBack = { navController.popBackStack() })
         }
-
         composable(Routes.ImportanciaReciclar) {
             ImportanciaReciclarScreen(onBack = { navController.popBackStack() })
         }
-
         composable(Routes.ImpactoMedioambiental) {
             ImpactoMedioambienteInfoScreen(onBack = { navController.popBackStack() })
         }
     }
 }
-
-
-
-

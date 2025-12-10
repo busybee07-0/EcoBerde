@@ -1,5 +1,6 @@
 package com.javierf.ecoberde.data.model.ganancias
 
+
 class CalculoG {
 
     // Suma total del día

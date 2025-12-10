@@ -13,24 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
-// --------- FORMATEO FECHA (Fix del día anterior) ----------
-fun Long.toLocalDateString(): String {
-    val localDate = Instant.ofEpochMilli(this)
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate()
-    return localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GananciasScreen(
-    viewModel: GananciasViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onBack: () -> Unit = {},
     onCalcular: () -> Unit = {},
     onDetalle: () -> Unit = {},
@@ -42,40 +28,44 @@ fun GananciasScreen(
 
     val datePickerState = rememberDatePickerState()
 
-    val scrollState = rememberScrollState()
+    val fechaSeleccionadaTexto by remember {
+        derivedStateOf {
+            val millis = datePickerState.selectedDateMillis
+            if (millis != null) convertirFechaCorrecta(millis) else ""
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {},
+                title = { Text("Ganancias") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 }
             )
         }
-    ) { innerPadding ->
-
+    ) { inner ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(inner)
                 .padding(horizontal = 20.dp)
-                .verticalScroll(scrollState),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(8.dp))
+
             Text(
-                text = "Ganancias",
-                fontSize = 24.sp,
+                text = "Módulo de Ganancias",
+                fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = green
             )
 
             Spacer(Modifier.height(16.dp))
 
-            // ---------- CALENDARIO ----------
             DatePicker(
                 state = datePickerState,
                 showModeToggle = true,
@@ -84,50 +74,62 @@ fun GananciasScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
 
-            val selectedDate = datePickerState.selectedDateMillis
-
-            if (selectedDate != null) {
-                val fecha = selectedDate.toLocalDateString()
-
-                // Guardar fecha en ViewModel
-                LaunchedEffect(fecha) {
-                    viewModel.seleccionarFecha(fecha)
-                }
-
+            if (fechaSeleccionadaTexto.isNotBlank()) {
                 Text(
-                    text = "Fecha seleccionada: $fecha",
-                    color = Color.Gray,
+                    text = "El día seleccionado es: $fechaSeleccionadaTexto",
+                    color = Color.DarkGray,
                     fontSize = 14.sp
                 )
-
-                Spacer(Modifier.height(8.dp))
+            } else {
+                Text(
+                    text = "Seleccione un día en el calendario",
+                    color = Color.Red,
+                    fontSize = 14.sp
+                )
             }
 
-            // ---------- BOTONES ----------
-            ActionButton("Calcular Ganancias", onCalcular, greenLight)
-            ActionButton("Detalle Ganancias", onDetalle, greenLight)
-            ActionButton("Historial Ganancias", onHistorial, greenLight)
-            ActionButton("Agregar Materiales", onAgregarMateriales, greenLight)
+            Spacer(Modifier.height(16.dp))
+
+            GananciasActionButton("Calcular Ganancias", onCalcular, greenLight)
+            GananciasActionButton("Detalle de Ganancias", onDetalle, greenLight)
+            GananciasActionButton("Historial de Ganancias", onHistorial, greenLight)
+            GananciasActionButton("Registrar Material", onAgregarMateriales, greenLight)
+
+            Spacer(Modifier.height(20.dp))
         }
     }
 }
 
 @Composable
-private fun ActionButton(
+private fun GananciasActionButton(
     text: String,
     onClick: () -> Unit,
-    bg: Color
+    background: Color
 ) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = bg)
+        colors = ButtonDefaults.buttonColors(containerColor = background)
     ) {
         Text(text, color = Color.Black, fontWeight = FontWeight.Bold)
     }
+}
+
+
+private fun convertirFechaCorrecta(millis: Long): String {
+    val date = java.util.Date(millis)
+    val calendar = java.util.Calendar.getInstance()
+    calendar.time = date
+    calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
+
+    val dia = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+    val mes = calendar.get(java.util.Calendar.MONTH) + 1
+    val año = calendar.get(java.util.Calendar.YEAR)
+
+    return "%02d/%02d/%04d".format(dia, mes, año)
 }
 

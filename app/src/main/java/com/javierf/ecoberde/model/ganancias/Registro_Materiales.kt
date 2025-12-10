@@ -1,5 +1,6 @@
 package com.javierf.ecoberde.data.model.ganancias
 
+
 // Lista temporal de materiales para la fecha seleccionada
 class Registro_Materiales {
 
