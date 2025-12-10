@@ -6,21 +6,27 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.javierf.ecoberde.data.dao.MaterialDao
 import com.javierf.ecoberde.data.dao.MaterialRecicladoDao
+import com.javierf.ecoberde.data.dao.GananciaDao
 import com.javierf.ecoberde.data.entities.Material
 import com.javierf.ecoberde.data.entities.MaterialReciclado
+import com.javierf.ecoberde.data.entities.GananciaEntity
 
 @Database(
     entities = [
         Material::class,
-        MaterialReciclado::class
+        MaterialReciclado::class,
+        GananciaEntity::class   // 👈 NUEVA TABLA
     ],
-    version = 1,
+    version = 2,               // 👈 subí la versión (antes estaba en 1)
     exportSchema = false
 )
 abstract class EcoBerdeDatabase : RoomDatabase() {
 
     abstract fun materialDao(): MaterialDao
     abstract fun materialRecicladoDao(): MaterialRecicladoDao
+
+    // 👇 NUEVO DAO
+    abstract fun gananciaDao(): GananciaDao
 
     companion object {
         @Volatile
@@ -34,7 +40,10 @@ abstract class EcoBerdeDatabase : RoomDatabase() {
                     EcoBerdeDatabase::class.java,
                     "ecoberde_db"
                 )
-                    .fallbackToDestructiveMigration() // simplifica migraciones
+                    // Si cambias la versión (1 → 2) y no haces migraciones,
+                    // Room borra y recrea las tablas. PERO entre ejecuciones normales
+                    // la info queda guardada.
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance
@@ -43,3 +52,5 @@ abstract class EcoBerdeDatabase : RoomDatabase() {
         }
     }
 }
+
+
