@@ -13,25 +13,39 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GananciasScreen(
+    viewModel: GananciasViewModel,
     onBack: () -> Unit = {},
     onCalcular: () -> Unit = {},
     onDetalle: () -> Unit = {},
     onHistorial: () -> Unit = {},
-    onAgregarMateriales: () -> Unit = {}
-) {
+    onAgregarMateriales: (String) -> Unit = {}   // ← CAMBIA ESTO
+)
+ {
     val green = Color(0xFF2E7D32)
     val greenLight = Color(0xFFC8E6C9)
 
+    val scrollState = rememberScrollState()
+
+    // Estado del DatePicker (calendario)
     val datePickerState = rememberDatePickerState()
 
+    // Texto amigable de la fecha seleccionada, ya ajustado a la zona horaria local
     val fechaSeleccionadaTexto by remember {
         derivedStateOf {
             val millis = datePickerState.selectedDateMillis
             if (millis != null) convertirFechaCorrecta(millis) else ""
+        }
+    }
+
+    // Sincronizar fecha del calendario con el ViewModel
+    LaunchedEffect(fechaSeleccionadaTexto) {
+        if (fechaSeleccionadaTexto.isNotBlank()) {
+            viewModel.seleccionarFecha(fechaSeleccionadaTexto)
         }
     }
 
@@ -41,20 +55,24 @@ fun GananciasScreen(
                 title = { Text("Ganancias") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
                     }
                 }
             )
         }
-    ) { inner ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(inner)
+                .padding(innerPadding)
                 .padding(horizontal = 20.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),  // para que siempre veas todos los botones
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Spacer(Modifier.height(8.dp))
 
             Text(
@@ -66,6 +84,7 @@ fun GananciasScreen(
 
             Spacer(Modifier.height(16.dp))
 
+            // 📅 Calendario
             DatePicker(
                 state = datePickerState,
                 showModeToggle = true,
@@ -76,6 +95,7 @@ fun GananciasScreen(
 
             Spacer(Modifier.height(12.dp))
 
+            // Texto con la fecha seleccionada
             if (fechaSeleccionadaTexto.isNotBlank()) {
                 Text(
                     text = "El día seleccionado es: $fechaSeleccionadaTexto",
@@ -92,12 +112,38 @@ fun GananciasScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            GananciasActionButton("Calcular Ganancias", onCalcular, greenLight)
-            GananciasActionButton("Detalle de Ganancias", onDetalle, greenLight)
-            GananciasActionButton("Historial de Ganancias", onHistorial, greenLight)
-            GananciasActionButton("Registrar Material", onAgregarMateriales, greenLight)
+            // 4 BOTONES
+            GananciasActionButton(
+                text = "Calcular Ganancias",
+                onClick = onCalcular,
+                background = greenLight
+            )
 
-            Spacer(Modifier.height(20.dp))
+            GananciasActionButton(
+                text = "Detalle de Ganancias",
+                onClick = onDetalle,
+                background = greenLight
+            )
+
+            GananciasActionButton(
+                text = "Historial de Ganancias",
+                onClick = onHistorial,
+                background = greenLight
+            )
+
+            GananciasActionButton(
+                text = "Registrar Material",
+                onClick = {
+                    val fecha = viewModel.fechaSeleccionada  // o tu variable de texto de fecha
+                    if (fecha.isNotBlank()) {
+                        onAgregarMateriales(fecha)
+                    }
+                },
+                background = greenLight
+            )
+
+
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
@@ -119,11 +165,13 @@ private fun GananciasActionButton(
     }
 }
 
-
+// Corrige el desfase de un día del DatePicker
 private fun convertirFechaCorrecta(millis: Long): String {
     val date = java.util.Date(millis)
     val calendar = java.util.Calendar.getInstance()
     calendar.time = date
+
+    // Ajuste: si el DatePicker da un día antes, sumamos 1
     calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
 
     val dia = calendar.get(java.util.Calendar.DAY_OF_MONTH)

@@ -3,31 +3,27 @@ package com.javierf.ecoberde.data.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-// Tabla donde voy a guardar cada registro de material asociado a una fecha
+/**
+ * Tabla de ganancias por material y fecha.
+ *
+ * Aquí guardo cada registro que el usuario crea en "Registrar Material":
+ * - fecha: la fecha seleccionada en el módulo de Ganancias (dd/MM/yyyy)
+ * - nombre, tipo, unidad: vienen del formulario
+ * - cantidad y precioUnidad: los uso para el cálculo
+ * - total: cantidad * precioUnidad (lo puedo calcular antes de guardar)
+ */
 @Entity(tableName = "ganancias")
 data class GananciaEntity(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    val idGanancia: Long = 0L,
 
-    // Fecha en formato dd/MM/yyyy (la misma que muestras en la UI)
-    val fecha: String,
-
-    // Nombre que el usuario escribió (ej: "Botellas de gaseosa")
+    val fecha: String,          // ej: "10/12/2025"
     val nombre: String,
-
-    // Tipo principal (Plástico, Cartón, Vidrio, etc.)
     val tipo: String,
-
-    // Unidad que pusimos automática (kg, L, etc.)
-    val unidad: String,
-
-    // Cantidad que el usuario digita
+    val unidad: String,         // kg, L, etc.
     val cantidad: Double,
-
-    // Precio por unidad que el usuario digita
     val precioUnidad: Double,
-
-    // Total calculado = cantidad * precioUnidad
-    val total: Double
+    val total: Double           // cantidad * precioUnidad
 )
+

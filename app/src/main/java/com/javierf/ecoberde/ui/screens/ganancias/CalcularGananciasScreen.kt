@@ -5,18 +5,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalcularGananciasScreen(
+    viewModel: GananciasViewModel,
     onBack: () -> Unit = {}
 ) {
     val green = MaterialTheme.colorScheme.primary
+
+    // Pedimos al ViewModel que calcule con la fecha actual
+    LaunchedEffect(Unit) {
+        viewModel.calcularGanancias()
+    }
+
+    val fecha = viewModel.fechaSeleccionada
+    val total = viewModel.totalDia ?: 0.0
+    val detalles = viewModel.detallesDia
+    val cantidadMateriales = detalles.size
 
     Scaffold(
         topBar = {
@@ -45,16 +58,14 @@ fun CalcularGananciasScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // Fecha simulada
             Text(
-                text = "Fecha: 09/12/2025",
+                text = if (fecha.isNotBlank()) "Fecha: $fecha" else "Fecha: (sin seleccionar)",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
 
             Spacer(Modifier.height(16.dp))
 
-            // Tarjeta con el total
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -73,34 +84,22 @@ fun CalcularGananciasScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "$ 45.000",
+                        text = "$ ${"%,.0f".format(total)}",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = green
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "A partir de 6 materiales reciclados.",
+                        text = "A partir de $cantidadMateriales materiales registrados.",
                         fontSize = 13.sp
                     )
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
 
-            Text(
-                text = "Comentario",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Hoy se obtuvo una ganancia estable. " +
-                        "Se recomienda aumentar la recolección de plástico y cartón " +
-                        "para incrementar el total en los próximos días.",
-                fontSize = 14.sp
-            )
         }
     }
 }
+
 

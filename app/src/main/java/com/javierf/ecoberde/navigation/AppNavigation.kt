@@ -143,27 +143,44 @@ fun AppNavigation() {
         // ============================================================
         composable(Routes.Ganancias) {
             GananciasScreen(
+                viewModel = gananciasViewModel,   // ← ¡ESTE ES EL QUE FALTABA!
                 onBack = { navController.popBackStack() },
                 onCalcular = { navController.navigate(Routes.CalcularGanancias) },
                 onDetalle = { navController.navigate(Routes.DetalleGanancias) },
                 onHistorial = { navController.navigate(Routes.HistorialGanancias) },
-                onAgregarMateriales = { navController.navigate(Routes.RegistroMaterial) }
+                onAgregarMateriales = { fecha ->
+                    val safeFecha = fecha.replace("/", "-")
+                    navController.navigate("${Routes.RegistroMaterial}/$safeFecha")
+                }
             )
         }
 
-        // Registrar material (ya la tienes hecha, solo la mostramos)
-        composable(Routes.RegistroMaterial) {
+
+        // Registrar material – recibe la fecha por argumento
+        composable(
+            route = "${Routes.RegistroMaterial}/{fecha}",
+            arguments = listOf(
+                navArgument("fecha") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val fechaArg = backStackEntry.arguments?.getString("fecha") ?: ""
+            // volvemos a poner las barras para mostrarla bonita
+            val fechaMostrar = fechaArg.replace("-", "/")
+
             RegistroMaterialesScreen(
                 viewModel = gananciasViewModel,
-                fechaSeleccionada = "",   // por ahora sin lógica de fecha
+                fechaSeleccionada = fechaMostrar,
                 onBack = { navController.popBackStack() },
                 onMaterialGuardado = { navController.popBackStack() }
             )
         }
 
-        // ▼▼▼ NUEVAS PANTALLAS VACÍAS PERO FUNCIONALES ▼▼▼
+        // ▼▼▼ PANTALLAS DE GANANCIAS (mock visual) ▼▼▼
         composable(Routes.CalcularGanancias) {
-            CalcularGananciasScreen(onBack = { navController.popBackStack() })
+            CalcularGananciasScreen(
+                viewModel = gananciasViewModel,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Routes.DetalleGanancias) {

@@ -1,18 +1,22 @@
 package com.javierf.ecoberde.data.model.ganancias
 
-
-// Lista temporal de materiales para la fecha seleccionada
+// Registro de materiales separado por fecha (dd/MM/yyyy)
 class Registro_Materiales {
 
-    private val lista = mutableListOf<Material_Ganancia>()
+    // Mapa: "11/12/2025" -> [material1, material2, ...]
+    private val registrosPorFecha = mutableMapOf<String, MutableList<Material_Ganancia>>()
 
-    fun agregarMaterial(m: Material_Ganancia) {
-        lista.add(m)
+    fun agregarMaterial(fecha: String, material: Material_Ganancia) {
+        val lista = registrosPorFecha.getOrPut(fecha) { mutableListOf() }
+        lista.add(material)
     }
 
-    fun obtenerMateriales(): List<Material_Ganancia> = lista.toList()
+    fun obtenerMateriales(fecha: String): List<Material_Ganancia> {
+        return registrosPorFecha[fecha]?.toList() ?: emptyList()
+    }
 
-    fun limpiar() {
-        lista.clear()
+    fun limpiar(fecha: String) {
+        registrosPorFecha.remove(fecha)
     }
 }
+

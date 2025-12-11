@@ -8,19 +8,16 @@ import com.javierf.ecoberde.data.entities.GananciaEntity
 @Dao
 interface GananciaDao {
 
-    // Para guardar un registro de ganancia (un material en una fecha)
+    // Inserto una sola ganancia (un registro de material en una fecha)
     @Insert
-    suspend fun insertGanancia(ganancia: GananciaEntity)
+    suspend fun insertarGanancia(ganancia: GananciaEntity)
 
-    // Para ver todos los materiales registrados en una fecha específica
-    @Query("SELECT * FROM ganancias WHERE fecha = :fecha ORDER BY id DESC")
-    suspend fun getGananciasPorFecha(fecha: String): List<GananciaEntity>
+    // Todas las ganancias de un día específico
+    @Query("SELECT * FROM ganancias WHERE fecha = :fecha")
+    suspend fun obtenerGananciasPorFecha(fecha: String): List<GananciaEntity>
 
-    // Para ver todo el historial de registros (luego lo usamos para la pantalla de historial)
-    @Query("SELECT * FROM ganancias ORDER BY fecha DESC, id DESC")
-    suspend fun getTodasGanancias(): List<GananciaEntity>
-
-    // Por si en algún momento quiero limpiar todo
-    @Query("DELETE FROM ganancias")
-    suspend fun borrarTodo()
+    // TODO: luego podemos hacer consultas más bonitas para historial
+    @Query("SELECT * FROM ganancias")
+    suspend fun obtenerTodas(): List<GananciaEntity>
 }
+

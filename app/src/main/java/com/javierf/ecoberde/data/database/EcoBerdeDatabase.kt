@@ -15,9 +15,9 @@ import com.javierf.ecoberde.data.entities.GananciaEntity
     entities = [
         Material::class,
         MaterialReciclado::class,
-        GananciaEntity::class   // 👈 NUEVA TABLA
+        GananciaEntity::class      // 👈 NUEVA TABLA
     ],
-    version = 2,               // 👈 subí la versión (antes estaba en 1)
+    version = 2,                   // 👈 subí versión (antes era 1)
     exportSchema = false
 )
 abstract class EcoBerdeDatabase : RoomDatabase() {
@@ -40,9 +40,7 @@ abstract class EcoBerdeDatabase : RoomDatabase() {
                     EcoBerdeDatabase::class.java,
                     "ecoberde_db"
                 )
-                    // Si cambias la versión (1 → 2) y no haces migraciones,
-                    // Room borra y recrea las tablas. PERO entre ejecuciones normales
-                    // la info queda guardada.
+                    // Solo borra la BD si CAMBIO la estructura (como ahora al agregar ganancias)
                     .fallbackToDestructiveMigration()
                     .build()
 
@@ -52,5 +50,6 @@ abstract class EcoBerdeDatabase : RoomDatabase() {
         }
     }
 }
+
 
 
