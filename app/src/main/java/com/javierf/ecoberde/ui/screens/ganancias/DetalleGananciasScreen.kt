@@ -7,32 +7,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-data class MaterialDetalleDemo(
-    val nombre: String,
-    val tipo: String,
-    val cantidad: String,
-    val unidad: String,
-    val subtotal: String
-)
+import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleGananciasScreen(
+    viewModel: GananciasViewModel,
     onBack: () -> Unit = {}
 ) {
-    val demoLista = listOf(
-        MaterialDetalleDemo("Botellas PET", "Plástico", "5.0", "kg", "$ 15.000"),
-        MaterialDetalleDemo("Cartón corrugado", "Cartón", "3.0", "kg", "$ 9.000"),
-        MaterialDetalleDemo("Vidrio verde", "Vidrio", "4.0", "kg", "$ 8.000"),
-        MaterialDetalleDemo("Papel blanco", "Papel", "2.5", "kg", "$ 5.000"),
-        MaterialDetalleDemo("Latas de aluminio", "Metal", "1.5", "kg", "$ 8.000")
-    )
+    val fecha = viewModel.fechaSeleccionada
+    val detalles = viewModel.detallesDia   // viene de calcularGanancias()
 
     Scaffold(
         topBar = {
@@ -54,43 +42,54 @@ fun DetalleGananciasScreen(
         ) {
 
             Text(
-                text = "Materiales del día 09/12/2025",
+                text = if (fecha.isBlank())
+                    "Materiales del día (sin fecha seleccionada)"
+                else
+                    "Materiales del día $fecha",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(Modifier.height(12.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(demoLista) { material ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Column(
+            if (detalles.isEmpty()) {
+                Text(
+                    text = "No hay materiales registrados para este día.",
+                    fontSize = 14.sp
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(detalles) { det ->
+                        // det: DetalleG (tipoMaterial, cantidad, valorParcial)
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp)
+                                .padding(vertical = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
                         ) {
-                            Text(
-                                text = material.nombre,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = "${material.tipo} • ${material.cantidad} ${material.unidad}",
-                                fontSize = 13.sp
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                text = "Subtotal: ${material.subtotal}",
-                                fontWeight = FontWeight.Bold
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            ) {
+                                Text(
+                                    text = det.tipoMaterial,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = "Cantidad: ${det.cantidad}",
+                                    fontSize = 13.sp
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = "Subtotal: $ ${det.valorParcial.toInt()}",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
                 }
@@ -98,4 +97,3 @@ fun DetalleGananciasScreen(
         }
     }
 }
-

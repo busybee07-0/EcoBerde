@@ -7,28 +7,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-data class RegistroHistorialDemo(
-    val fecha: String,
-    val total: String
-)
+import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistorialGananciasScreen(
+    viewModel: GananciasViewModel,
     onBack: () -> Unit = {}
 ) {
-    val historialDemo = listOf(
-        RegistroHistorialDemo("09/12/2025", "$ 45.000"),
-        RegistroHistorialDemo("08/12/2025", "$ 32.500"),
-        RegistroHistorialDemo("07/12/2025", "$ 27.000"),
-        RegistroHistorialDemo("06/12/2025", "$ 18.000")
-    )
+    // Cargamos/actualizamos historial al entrar a esta pantalla
+    LaunchedEffect(Unit) {
+        viewModel.cargarHistorial()
+    }
+
+    val historial = viewModel.historialLista   // List<Pair<String, Double>>
 
     Scaffold(
         topBar = {
@@ -56,17 +53,24 @@ fun HistorialGananciasScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            LazyColumn {
-                items(historialDemo) { registro ->
-                    ListItem(
-                        headlineContent = {
-                            Text(registro.fecha, fontWeight = FontWeight.SemiBold)
-                        },
-                        supportingContent = {
-                            Text("Ganancia total: ${registro.total}")
-                        }
-                    )
-                    Divider()
+            if (historial.isEmpty()) {
+                Text(
+                    text = "Todavía no hay días con ganancias registradas.",
+                    fontSize = 14.sp
+                )
+            } else {
+                LazyColumn {
+                    items(historial) { (fecha, total) ->
+                        ListItem(
+                            headlineContent = {
+                                Text(fecha, fontWeight = FontWeight.SemiBold)
+                            },
+                            supportingContent = {
+                                Text("Ganancia total: $ ${total.toInt()}")
+                            }
+                        )
+                        Divider()
+                    }
                 }
             }
         }

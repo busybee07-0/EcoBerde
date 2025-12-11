@@ -184,12 +184,19 @@ fun AppNavigation() {
         }
 
         composable(Routes.DetalleGanancias) {
-            DetalleGananciasScreen(onBack = { navController.popBackStack() })
+            DetalleGananciasScreen(
+                viewModel = gananciasViewModel,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Routes.HistorialGanancias) {
-            HistorialGananciasScreen(onBack = { navController.popBackStack() })
+            HistorialGananciasScreen(
+                viewModel = gananciasViewModel,
+                onBack = { navController.popBackStack() }
+            )
         }
+
         // ▲▲▲ FIN GANANCIAS ▲▲▲
 
         // ============================================================
