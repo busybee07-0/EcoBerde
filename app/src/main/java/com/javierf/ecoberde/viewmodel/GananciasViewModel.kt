@@ -1,22 +1,18 @@
 package com.javierf.ecoberde.ui.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import com.javierf.ecoberde.data.model.ganancias.CalculoG
-import com.javierf.ecoberde.data.model.ganancias.Calendario
-import com.javierf.ecoberde.data.model.ganancias.DetalleG
-import com.javierf.ecoberde.data.model.ganancias.HistorialG
-import com.javierf.ecoberde.data.model.ganancias.Material_Ganancia
-import com.javierf.ecoberde.data.model.ganancias.Registro_Materiales
+import com.javierf.ecoberde.data.model.ganancias.*
 
 class GananciasViewModel : ViewModel() {
 
     private val calendario = Calendario()
-    private val registro = Registro_Materiales()
     private val historial = HistorialG()
     private val calculadora = CalculoG()
+
+    // 🔹 NUEVO: materiales agrupados por fecha (dd/MM/yyyy)
+    private val materialesPorFecha =
+        mutableStateMapOf<String, MutableList<Material_Ganancia>>()
 
     // =================== ESTADOS USADOS EN LAS PANTALLAS =================== //
 
@@ -36,50 +32,47 @@ class GananciasViewModel : ViewModel() {
     var historialLista by mutableStateOf<List<Pair<String, Double>>>(emptyList())
         private set
 
-
     // ======================= FUNCIONES PRINCIPALES ========================= //
 
-    /**
-     * Guarda la fecha seleccionada por el usuario.
-     */
     fun seleccionarFecha(fecha: String) {
         fechaSeleccionada = fecha
         calendario.seleccionarFecha(fecha)
 
-        // Si ya existe un registro de ese día, cargarlo
+        // Si ya existe un registro de ese día en el historial, lo cargamos
         val registroExistente = historialLista.firstOrNull { it.first == fecha }
-        totalDia = registroExistente?.second ?: 0.0
-
-        // Los detalles se recalculan cuando el usuario pide "Calcular"
-        detallesDia = emptyList()
+        totalDia = registroExistente?.second
     }
 
     /**
-     * Agrega un material a la lista temporal del día.
+     * Guarda un material en la fecha actualmente seleccionada.
      */
     fun agregarMaterial(material: Material_Ganancia) {
-        // Si no hay fecha, no guardamos nada
         if (fechaSeleccionada.isBlank()) return
 
         if (material.validar()) {
-            registro.agregarMaterial(fechaSeleccionada, material)
+            val lista = materialesPorFecha.getOrPut(fechaSeleccionada) { mutableListOf() }
+            lista.add(material)
         }
     }
 
     /**
-     * Calcula las ganancias del día con todos los materiales agregados
-     * para la fecha seleccionada.
+     * Devuelve los materiales de una fecha dada.
      */
-    fun calcularGanancias() {
+    private fun obtenerMaterialesDe(fecha: String): List<Material_Ganancia> {
+        return materialesPorFecha[fecha].orEmpty()
+    }
 
-        // Si no hay fecha elegida, no calculamos nada
-        if (fechaSeleccionada.isBlank()) {
+    /**
+     * Calcula las ganancias del día (usa la fecha actual por defecto).
+     */
+    fun calcularGanancias(fecha: String = fechaSeleccionada) {
+        if (fecha.isBlank()) {
             totalDia = 0.0
             detallesDia = emptyList()
             return
         }
 
-        val materiales = registro.obtenerMateriales(fechaSeleccionada)
+        val materiales = obtenerMaterialesDe(fecha)
 
         if (materiales.isEmpty()) {
             totalDia = 0.0
@@ -100,14 +93,11 @@ class GananciasViewModel : ViewModel() {
             )
         }
 
-        // Guardar en historial
-        historial.agregarRegistro(fechaSeleccionada, total)
+        // Guardar en historial (fecha → total)
+        historial.agregarRegistro(fecha, total)
         historialLista = historial.obtenerHistorial()
     }
 
-    /**
-     * Cargar historial completo.
-     */
     fun cargarHistorial() {
         historialLista = historial.obtenerHistorial()
     }

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -17,10 +18,15 @@ import com.javierf.ecoberde.ui.viewmodel.GananciasViewModel
 @Composable
 fun DetalleGananciasScreen(
     viewModel: GananciasViewModel,
+    fecha: String,
     onBack: () -> Unit = {}
 ) {
-    val fecha = viewModel.fechaSeleccionada
-    val detalles = viewModel.detallesDia   // viene de calcularGanancias()
+    // Al entrar, calculamos las ganancias de ESA fecha
+    LaunchedEffect(fecha) {
+        viewModel.calcularGanancias(fecha)
+    }
+
+    val detalles = viewModel.detallesDia
 
     Scaffold(
         topBar = {
@@ -62,7 +68,6 @@ fun DetalleGananciasScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(detalles) { det ->
-                        // det: DetalleG (tipoMaterial, cantidad, valorParcial)
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -97,3 +102,4 @@ fun DetalleGananciasScreen(
         }
     }
 }
+

@@ -143,10 +143,13 @@ fun AppNavigation() {
         // ============================================================
         composable(Routes.Ganancias) {
             GananciasScreen(
-                viewModel = gananciasViewModel,   // ← ¡ESTE ES EL QUE FALTABA!
+                viewModel = gananciasViewModel,
                 onBack = { navController.popBackStack() },
                 onCalcular = { navController.navigate(Routes.CalcularGanancias) },
-                onDetalle = { navController.navigate(Routes.DetalleGanancias) },
+                onDetalle = { fecha ->
+                    val safeFecha = fecha.replace("/", "-")
+                    navController.navigate("${Routes.DetalleGanancias}/$safeFecha")
+                },
                 onHistorial = { navController.navigate(Routes.HistorialGanancias) },
                 onAgregarMateriales = { fecha ->
                     val safeFecha = fecha.replace("/", "-")
@@ -154,7 +157,6 @@ fun AppNavigation() {
                 }
             )
         }
-
 
         // Registrar material – recibe la fecha por argumento
         composable(
@@ -164,7 +166,6 @@ fun AppNavigation() {
             )
         ) { backStackEntry ->
             val fechaArg = backStackEntry.arguments?.getString("fecha") ?: ""
-            // volvemos a poner las barras para mostrarla bonita
             val fechaMostrar = fechaArg.replace("-", "/")
 
             RegistroMaterialesScreen(
@@ -175,7 +176,7 @@ fun AppNavigation() {
             )
         }
 
-        // ▼▼▼ PANTALLAS DE GANANCIAS (mock visual) ▼▼▼
+        // ▼▼▼ PANTALLAS DE GANANCIAS ▼▼▼
         composable(Routes.CalcularGanancias) {
             CalcularGananciasScreen(
                 viewModel = gananciasViewModel,
@@ -183,9 +184,16 @@ fun AppNavigation() {
             )
         }
 
-        composable(Routes.DetalleGanancias) {
+        composable(
+            route = "${Routes.DetalleGanancias}/{fecha}",
+            arguments = listOf(navArgument("fecha") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val safeFecha = backStackEntry.arguments?.getString("fecha") ?: ""
+            val fecha = safeFecha.replace("-", "/")
+
             DetalleGananciasScreen(
                 viewModel = gananciasViewModel,
+                fecha = fecha,
                 onBack = { navController.popBackStack() }
             )
         }
@@ -196,7 +204,6 @@ fun AppNavigation() {
                 onBack = { navController.popBackStack() }
             )
         }
-
         // ▲▲▲ FIN GANANCIAS ▲▲▲
 
         // ============================================================
@@ -228,3 +235,4 @@ fun AppNavigation() {
         }
     }
 }
+

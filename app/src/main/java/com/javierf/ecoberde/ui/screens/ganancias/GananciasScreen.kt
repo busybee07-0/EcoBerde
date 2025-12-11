@@ -21,11 +21,10 @@ fun GananciasScreen(
     viewModel: GananciasViewModel,
     onBack: () -> Unit = {},
     onCalcular: () -> Unit = {},
-    onDetalle: () -> Unit = {},
+    onDetalle: (String) -> Unit = {},
     onHistorial: () -> Unit = {},
-    onAgregarMateriales: (String) -> Unit = {}   // ← CAMBIA ESTO
-)
- {
+    onAgregarMateriales: (String) -> Unit = {}
+) {
     val green = Color(0xFF2E7D32)
     val greenLight = Color(0xFFC8E6C9)
 
@@ -34,7 +33,7 @@ fun GananciasScreen(
     // Estado del DatePicker (calendario)
     val datePickerState = rememberDatePickerState()
 
-    // Texto amigable de la fecha seleccionada, ya ajustado a la zona horaria local
+    // Texto amigable de la fecha seleccionada (corregida +1 día)
     val fechaSeleccionadaTexto by remember {
         derivedStateOf {
             val millis = datePickerState.selectedDateMillis
@@ -69,7 +68,7 @@ fun GananciasScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 20.dp)
-                .verticalScroll(scrollState),  // para que siempre veas todos los botones
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -113,35 +112,42 @@ fun GananciasScreen(
             Spacer(Modifier.height(16.dp))
 
             // 4 BOTONES
+
+            // 1) Calcular ganancias (no necesita fecha en la navegación)
             GananciasActionButton(
                 text = "Calcular Ganancias",
                 onClick = onCalcular,
                 background = greenLight
             )
 
+            // 2) Detalle de ganancias (necesita fecha)
             GananciasActionButton(
                 text = "Detalle de Ganancias",
-                onClick = onDetalle,
+                onClick = {
+                    if (fechaSeleccionadaTexto.isNotBlank()) {
+                        onDetalle(fechaSeleccionadaTexto)
+                    }
+                },
                 background = greenLight
             )
 
+            // 3) Historial de ganancias (no necesita fecha específica)
             GananciasActionButton(
                 text = "Historial de Ganancias",
                 onClick = onHistorial,
                 background = greenLight
             )
 
+            // 4) Registrar material (necesita fecha)
             GananciasActionButton(
                 text = "Registrar Material",
                 onClick = {
-                    val fecha = viewModel.fechaSeleccionada  // o tu variable de texto de fecha
-                    if (fecha.isNotBlank()) {
-                        onAgregarMateriales(fecha)
+                    if (fechaSeleccionadaTexto.isNotBlank()) {
+                        onAgregarMateriales(fechaSeleccionadaTexto)
                     }
                 },
                 background = greenLight
             )
-
 
             Spacer(Modifier.height(16.dp))
         }
@@ -180,4 +186,5 @@ private fun convertirFechaCorrecta(millis: Long): String {
 
     return "%02d/%02d/%04d".format(dia, mes, año)
 }
+
 
